@@ -13,6 +13,7 @@ export translates_grid,
 include("util/periodicinterval.jl")
 
 include("dictionary.jl")
+include("periodic_dict.jl")
 
 # submodules
 include("modules/BSplines/BSplines.jl")
