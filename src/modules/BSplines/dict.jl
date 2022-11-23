@@ -46,5 +46,5 @@ end
 BasisTranslates.kernel_eval(Φ::PeriodicBSplines{T}, x) where {T} =
     eval_bspline(spline_degree(Φ), x, T)
 
-BasisTranslates.kernel_eval_derivative(Φ::PeriodicBSplines{T}, d, x) where {T} =
-    eval_bspline_derivative(spline_degree(Φ), d, x, T)
+BasisTranslates.kernel_eval_derivative(Φ::PeriodicBSplines{T}, order, x) where {T} =
+    eval_bspline_derivative(spline_degree(Φ), order, x, T)

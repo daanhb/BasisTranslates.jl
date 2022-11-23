@@ -1,65 +1,77 @@
 "Supertype of radial basis functions."
-abstract type RBF{T}
+abstract type RBF
+end
+
+function kernel_eval_derivative(rbf::RBF, order::Int, r)
+    if order == 0
+        kernel_eval(rbf, r)
+    elseif order == 1
+        kernel_eval_diff1(rbf, r)
+    elseif order == 2
+        kernel_eval_diff2(rbf, r)
+    elseif order == 3
+        kernel_eval_diff3(rbf, r)
+    elseif order == 4
+        kernel_eval_diff4(rbf, r)
+    else
+        error("High order differentiation not implemented.")
+    end
 end
 
 "A smooth radial basis function, typically used with a shape parameter `ε`."
-abstract type SmoothRBF{T} <: RBF{T}
+abstract type SmoothRBF <: RBF
 end
 
 hascompactsupport(rbf::SmoothRBF) = false
 
 "A piecewise smooth radial basis function."
-abstract type PiecewiseSmoothRBF{T} <: RBF{T}
+abstract type PiecewiseSmoothRBF <: RBF
 end
 
 "The Multiquadric RBF function."
-struct Multiquadric{T} <: SmoothRBF{T}
+struct Multiquadric <: SmoothRBF
 end
-const MQ{T} = Multiquadric{T}
-MQ() = MQ{Float64}()
+const MQ = Multiquadric
 
 "The Inverse Multiquadric RBF function."
-struct InverseMultiquadric{T} <: SmoothRBF{T}
+struct InverseMultiquadric <: SmoothRBF
 end
-const IMQ{T} = InverseMultiquadric{T}
-IMQ() = IMQ{Float64}()
+const IMQ = InverseMultiquadric
 
 "The Inverse Quadratic RBF function."
-struct InverseQuadratic{T} <: SmoothRBF{T}
+struct InverseQuadratic <: SmoothRBF
 end
-const IQ{T} = InverseQuadratic{T}
-IQ() = IQ{Float64}()
+const IQ = InverseQuadratic
 
-struct Gaussian{T} <: SmoothRBF{T}
+kernel_eval(rbf::IQ, r) = rbf_iq(r)
+
+struct Gaussian <: SmoothRBF
 end
-const GA{T} = Gaussian{T}
-GA() = GA{Float64}()
+const GA = Gaussian
 
-approximate_support(rbf::Gaussian{T}, threshold = eps(T)) where {T} =
-    sqrt(-log(threshold))
+function support_approximate(rbf::Gaussian, threshold = eps(Float64))
+    S = sqrt(-log(threshold))
+    -S..S
+end
+
+kernel_eval(rbf::GA, r) = rbf_ga(r)
+kernel_eval_diff1(rbf::GA, r) = rbf_ga_diff1(r)
+kernel_eval_diff2(rbf::GA, r) = rbf_ga_diff2(r)
 
 
 "The polyharmonic spline RBF function."
-struct PolyharmonicSpline{T} <: PiecewiseSmoothRBF{T}
+struct PolyharmonicSpline <: PiecewiseSmoothRBF
     p   ::  Int
 end
-const PHS{T} = PolyharmonicSpline{T}
+const PHS = PolyharmonicSpline
 
-PolyharmonicSpline(p::Int) = PolyharmonicSpline{Float64}(p)
-
-(rbf::PolyharmonicSpline)(r) = rbf_phs(r, r.p)
-
-similar(r::PolyharmonicSpline{T}, p) where {T} = PolyharmonicSpline{T}(p)
+kernel_eval(rbf::PolyharmonicSpline, r) = rbf_phs(r, r.p)
 
 
 "The thin plate spline RBF function."
-struct ThinPlateSpline{T} <: PiecewiseSmoothRBF{T}
+struct ThinPlateSpline <: PiecewiseSmoothRBF
     p   ::  Int
 end
-const TPS{T} = ThinPlateSpline{T}
+const TPS = ThinPlateSpline
 
-ThinPlateSpline(p::Int) = ThinPlateSpline{Float64}(p)
-
-(rbf::ThinPlateSpline)(r) = rbf_tps(r, rbf.p)
-
-similar(r::ThinPlateSpline{T}, p) where {T} = ThinPlateSpline{T}(p)
+kernel_eval(rbf::ThinPlateSpline, r) = rbf_tps(r, rbf.p)
