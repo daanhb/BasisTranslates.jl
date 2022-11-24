@@ -1,5 +1,6 @@
 module BasisTranslates
 
+using BlockArrays, LinearAlgebra
 using BasisFunctions, DomainSets
 
 # From utilities
@@ -11,6 +12,7 @@ export translates_grid,
 
 # utilities
 include("util/periodicinterval.jl")
+include("util/multicirculant.jl")
 
 include("dictionary.jl")
 include("periodic_dict.jl")

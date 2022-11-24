@@ -4,7 +4,7 @@ A dictionary of periodic radial basis functions on the interval `[0,1]`.
 """
 abstract type PeriodicRBFs{T} <: BasisTranslates.PeriodicTranslates{T,T} end
 
-BasisFunctions.size(Φ::PeriodicRBFs) = (Φ.n,)
+Base.size(Φ::PeriodicRBFs) = (Φ.n,)
 
 "What is the shape parameter of the kernels?"
 shape_parameter(Φ::PeriodicRBFs) = Φ.epsilon
@@ -36,4 +36,4 @@ end
 rbf_kernel(Φ::PeriodicGaussians) = Gaussian()
 
 "Optimal value of the linear scaling constant."
-optimal_linear_scaling(n, τ) = pi / sqrt(2*pi*log(1+τ^(-2)))
+optimal_linear_scaling(n, τ) = 2pi / sqrt(2*pi*log(1+τ^(-2)))

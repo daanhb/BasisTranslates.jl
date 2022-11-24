@@ -4,7 +4,9 @@ authors = ["Daan Huybrechs <daan.huybrechs@kuleuven.be>"]
 version = "0.1.0"
 
 [deps]
+AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
 BasisFunctions = "4343a256-5453-507d-8aad-01a9d7189916"
+BlockArrays = "8e7c35d0-a365-5155-bbbb-fb81a777f24e"
 DomainSets = "5b8099bc-c8ec-5219-889f-1d9e522a28bf"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
@@ -14,7 +16,6 @@ BasisFunctions = "0.5"
 DomainSets = "0.5.14"
 SpecialFunctions = "1.0,2.0"
 julia = "1.6"
-
 
 [extras]
 QuadGK = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
