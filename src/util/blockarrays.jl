@@ -6,6 +6,8 @@ const BlockCirculant{T} =
 const BlockDiagonal{T} =
     BlockMatrix{T, Matrix{Diagonal{T, Vector{T}}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
 
+const BlockDiagonalAdj{T} = Adjoint{T,BlockDiagonal{T}}
+
 "Block row selection operator of a multi-row circulant matrix."
 const RestrictionBlockArray =
     BlockMatrix{Bool, Matrix{U}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}} where {U<:RestrictionArray}
@@ -90,7 +92,7 @@ function LinearAlgebra.pinv(A::BlockDiagonal{T}; atol::Real=0.0, rtol::Real = pi
     # Our task is to sum the squares of the diagonals of all the blocks
     diagonals = [diag(A[Block(k)]) for k in 1:s]
     diagnorm = mapreduce(x->x.^2, +, diagonals)
-    diagnorm_inv = diag(pinv(Diagonal(diagnorm); atol, rtol))
+    diagnorm_inv = diag(diagonal_pinv(Diagonal(diagnorm); atol, rtol))
     # now we multiply all diagonals with the inverse of that sum-of-squares
     diagonals_pinv = [conj(Diagonal(diag .* diagnorm_inv)) for diag in diagonals]
     # we abuse the adjoint of a block-column matrix to return a row-column matrix

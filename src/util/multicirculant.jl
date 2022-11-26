@@ -50,12 +50,13 @@ The matrix `B` is block-diagonalized using block Fourier, `P'*B*F = D`.
 The complete factorization satisfies `A = R'*P*D*F`.
 """
 struct MultiRowCirculantFactorization{T} <: LinearAlgebra.Factorization{T}
-    A   ::  MultiRowCirculant{T}
-    B   ::  BlockCirculant{T}
-    D   ::  BlockDiagonal{Complex{T}}
-    F   ::  NormalizedDFT{T}
-    P   ::  BlockFourierMatrix{T}
-    R   ::  MultiRowPermutationArray
+    A       ::  MultiRowCirculant{T}
+    B       ::  BlockCirculant{T}
+    D       ::  BlockDiagonal{Complex{T}}
+    Dpinv   ::  BlockDiagonalAdj{Complex{T}}
+    F       ::  NormalizedDFT{T}
+    P       ::  BlockFourierMatrix{T}
+    R       ::  MultiRowPermutationArray
 end
 
 nblocks(F::MultiRowCirculantFactorization) = nblocks(F.A)
@@ -65,8 +66,19 @@ function LinearAlgebra.factorize(A::MultiRowCirculant{T}) where {T}
     B = blockcirculant(A)
     diagonals = [Diagonal(eigvals(bl)) for bl in eachblock(B)]
     D = mortar(reshape(diagonals, s, 1))
+    Dpinv = pinv(D)
     F = NormalizedDFT{T}(n)
     P = BlockFourierMatrix{T}(s, n)
     R = blockrowselection(A)
-    MultiRowCirculantFactorization(A, B, D, F, P, R)
+    MultiRowCirculantFactorization(A, B, D, Dpinv, F, P, R)
+end
+
+import LinearAlgebra: \
+# solve x = A \ b
+function (\)(Fact::MultiRowCirculantFactorization, b::AbstractVector)
+    # turn b into blockvector
+    c = Fact.P' * (Fact.R * b)
+    y = Fact.Dpinv * c
+    x = Fact.F * y
+    isreal(b) ? real(x) : x
 end
