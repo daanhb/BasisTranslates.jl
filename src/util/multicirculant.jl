@@ -7,6 +7,22 @@ const BlockCirculant{T} =
 const ComplexBlockDiagonal{T} =
     BlockMatrix{Complex{T}, Matrix{Diagonal{Complex{T}, Vector{Complex{T}}}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
 
+const ColumnBlockArray{T} = Union{BlockCirculant{T}, ComplexBlockDiagonal{T}}
+
+function LinearAlgebra.mul!(y::AbstractBlockVector, A::ColumnBlockArray, x::AbstractBlockVector, α::Number, β::Number)
+    @assert α == 1
+    @assert iszero(β)
+    mul!(y, A, x)
+end
+
+function LinearAlgebra.mul!(y::AbstractBlockVector, A::ColumnBlockArray{T}, x::AbstractBlockVector) where {T}
+    s, _ = blocksize(A)
+    @assert axes(x)[1] == axes(y)[1] == axes(F)[2]
+    for k in 1:s
+        mul!(viewblock(y, Block(k)), A[Block(k)], viewblock(x, Block(k)))
+    end
+    y
+end
 
 """
 A multi-circulant matrix of intertwined circulant matrices, row by row.
@@ -37,12 +53,6 @@ function blockcirculant(A::MultiRowCirculant)
     mortar(reshape(A.arrays, s, 1))
 end
 
-
-# "An s x s block matrix, with n x n Fourier matrices on the diagonal."
-# struct BlockFourierMatrix{T} <: AbstractBlockArray{T}
-#     s   ::  Int
-#     n   ::  Int
-# end
 
 
 """

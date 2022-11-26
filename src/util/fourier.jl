@@ -41,14 +41,18 @@ Base.size(A::NormalizedDFT) = (A.n, A.n)
     normalized_dft_getindex(A.n, T, k, l)
 end
 
-function LinearAlgebra.mul!(y::AbstractVector, F::NormalizedDFT{T}, x::AbstractVector, α::Number, β::Number) where {T}
-    n = size(F, 1)
-    if length(y) != n
-        throw(DimensionMismatch("first dimension of A, $(n), does not match length of y, $(length(y))"))
+function check_dimensions(m, n, y, x)
+    if length(y) != m
+        throw(DimensionMismatch("first dimension of A, $(m), does not match length of y, $(length(y))"))
     end
     if length(x) != n
         throw(DimensionMismatch("second dimension of A, $(n), does not match length of x, $(length(x))"))
     end
+end
+
+function LinearAlgebra.mul!(y::AbstractVector, F::NormalizedDFT{T}, x::AbstractVector, α::Number, β::Number) where {T}
+    m, n = size(F)
+    check_dimensions(m, n, y, x)
     normalized_dft!(n, T, y, x)
     if α != 1
         y .= α .* y
