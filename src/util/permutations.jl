@@ -24,12 +24,7 @@ end
 
 function LinearAlgebra.mul!(y::AbstractVector, E::ExtensionArray, x::AbstractVector, α::Number, β::Number)
     m, n = size(E)
-    if length(y) != m
-        throw(DimensionMismatch("first dimension of A, $(m), does not match length of y, $(length(y))"))
-    end
-    if length(x) != n
-        throw(DimensionMismatch("second dimension of A, $(n), does not match length of x, $(length(x))"))
-    end
+    check_dimensions(m, n, y, x)
     @assert α == 1
     @assert iszero(β)
     y .= 0
