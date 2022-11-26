@@ -2,6 +2,7 @@ module BasisTranslates
 
 using BlockArrays, LinearAlgebra
 using BasisFunctions, DomainSets
+using AbstractFFTs
 
 # From utilities
 export PeriodicInterval
@@ -12,6 +13,7 @@ export translates_grid,
 
 # utilities
 include("util/periodicinterval.jl")
+include("util/fourier.jl")
 include("util/multicirculant.jl")
 
 include("dictionary.jl")

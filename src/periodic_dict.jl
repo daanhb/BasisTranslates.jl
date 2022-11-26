@@ -26,6 +26,9 @@ translates_grid(Φ::PeriodicTranslates{S}) where {S} =
 hasinterpolationgrid(Φ::PeriodicTranslates) = true
 interpolation_grid(Φ::PeriodicTranslates) = translates_grid(Φ)
 
+oversampling_grid(Φ::PeriodicTranslates, s::Int) =
+    resize(interpolation_grid(Φ), s*length(Φ))
+
 "The map from [0,1] to the domain of the kernel for index `i`."
 translate_map(Φ::PeriodicTranslates, i) = AffineMap{prectype(Φ)}(Φ.n, -(i-1))
 # By default the map is phi(n*x-k), so that the definition of the

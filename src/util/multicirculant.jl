@@ -1,4 +1,13 @@
 
+"Definition of a block circulant matrix."
+const BlockCirculant{T} =
+    BlockMatrix{T, Matrix{Circulant{T}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
+
+"Definition of a block diagonal matrix with complex entries."
+const ComplexBlockDiagonal{T} =
+    BlockMatrix{Complex{T}, Matrix{Diagonal{Complex{T}, Vector{Complex{T}}}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
+
+
 """
 A multi-circulant matrix of intertwined circulant matrices, row by row.
 """
@@ -7,10 +16,10 @@ struct MultiRowCirculant{T} <: AbstractMatrix{T}
 end
 
 nblocks(A::MultiRowCirculant) = length(A.arrays)
+blockdim(A::MultiRowCirculant) = size(A.arrays[1])[1]
 
 function Base.size(A::MultiRowCirculant)
-    n = size(A.arrays[1])[1]
-    s = nblocks(A)
+    s, n = nblocks(A), blockdim(A)
     n*s,n
 end
 
@@ -22,7 +31,39 @@ end
 
 Base.copy(A::MultiRowCirculant) = MultiRowCirculant([copy(a) for a in A.arrays])
 
+"Convert the given matrix into a block circulant matrix."
 function blockcirculant(A::MultiRowCirculant)
     s = nblocks(A)
     mortar(reshape(A.arrays, s, 1))
+end
+
+
+# "An s x s block matrix, with n x n Fourier matrices on the diagonal."
+# struct BlockFourierMatrix{T} <: AbstractBlockArray{T}
+#     s   ::  Int
+#     n   ::  Int
+# end
+
+
+"""
+Factorization of a multi-row circulant matrix.
+"""
+struct MultiRowCirculantFactorization{T} <: LinearAlgebra.Factorization{T}
+    A   ::  MultiRowCirculant{T}
+    B   ::  BlockCirculant{T}
+    D   ::  ComplexBlockDiagonal{T}
+    F   ::  NormalizedDFT{T}
+    P   ::  BlockFourierMatrix{T}
+end
+
+nblocks(F::MultiRowCirculantFactorization) = nblocks(F.A)
+
+function LinearAlgebra.factorize(A::MultiRowCirculant{T}) where {T}
+    s, n = nblocks(A), blockdim(A)
+    B = blockcirculant(A)
+    diagonals = [Diagonal(eigvals(bl)) for bl in eachblock(B)]
+    D = mortar(reshape(diagonals, s, 1))
+    F = NormalizedDFT{T}(n)
+    P = BlockFourierMatrix{T}(s, n)
+    MultiRowCirculantFactorization(A, B, D, F, P)
 end
