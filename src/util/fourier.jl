@@ -75,6 +75,12 @@ function LinearAlgebra.mul!(y::AbstractVector, A::NormalizedDFTAdj{T}, x::Abstra
     y
 end
 
+LinearAlgebra.inv(A::NormalizedDFT) = adjoint(A)
+LinearAlgebra.pinv(A::NormalizedDFT) = inv(A)
+
+LinearAlgebra.inv(A::NormalizedDFTAdj) = adjoint(A)
+LinearAlgebra.pinv(A::NormalizedDFTAdj) = inv(A)
+
 
 ##################################
 # A block-diagonal Fourier matrix
@@ -137,3 +143,9 @@ function LinearAlgebra.mul!(y::AbstractBlockVector, A::BlockFourierMatrixAdj{T},
     end
     y
 end
+
+LinearAlgebra.inv(A::BlockFourierMatrix) = adjoint(A)
+LinearAlgebra.pinv(A::BlockFourierMatrix) = inv(A)
+
+LinearAlgebra.inv(A::BlockFourierMatrixAdj) = adjoint(A)
+LinearAlgebra.pinv(A::BlockFourierMatrixAdj) = inv(A)

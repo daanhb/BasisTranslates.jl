@@ -16,6 +16,8 @@ const ColumnBlockArray = Union{
     RestrictionBlockArray
 }
 
+# Multiplication with block-column arrays
+
 function Base.:*(A::ColumnBlockArray, x::AbstractVector)
     y = similar(x, promote_type(eltype(A),eltype(x)), axes(A)[1])
     mul!(y, A, x)
@@ -77,4 +79,21 @@ function LinearAlgebra.mul!(y::AbstractVector, A::Adjoint{T,U}, x::AbstractBlock
         y .+= tmp
     end
     y
+end
+
+pinv_reltol(atol, dim, ::Type{T}) where T = (eps(real(float(oneunit(T))))*dim)*iszero(atol)
+
+# Other specializations
+
+function LinearAlgebra.pinv(A::BlockDiagonal{T}; atol::Real=0.0, rtol::Real = pinv_reltol(atol, size(A,2), T)) where {T}
+    s = blocksize(A,1)
+    # Our task is to sum the squares of the diagonals of all the blocks
+    diagonals = [diag(A[Block(k)]) for k in 1:s]
+    diagnorm = mapreduce(x->x.^2, +, diagonals)
+    diagnorm_inv = diag(pinv(Diagonal(diagnorm); atol, rtol))
+    # now we multiply all diagonals with the inverse of that sum-of-squares
+    diagonals_pinv = [conj(Diagonal(diag .* diagnorm_inv)) for diag in diagonals]
+    # we abuse the adjoint of a block-column matrix to return a row-column matrix
+    # (which is also why we take conjugates in the previous line)
+    mortar(reshape(diagonals_pinv, s, 1))'
 end
