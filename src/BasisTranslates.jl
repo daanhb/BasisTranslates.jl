@@ -15,6 +15,7 @@ export translates_grid,
 include("util/periodicinterval.jl")
 include("util/fourier.jl")
 include("util/permutations.jl")
+include("util/blockarrays.jl")
 include("util/multicirculant.jl")
 
 include("dictionary.jl")
