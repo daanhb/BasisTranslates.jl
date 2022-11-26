@@ -24,10 +24,12 @@ function Base.:*(A::ColumnBlockArray, x::AbstractVector)
     y = similar(x, promote_type(eltype(A),eltype(x)), axes(A)[1])
     mul!(y, A, x)
 end
+# avoid ambiguity error
 function Base.:*(A::ColumnBlockArray, x::AbstractBlockVector)
     y = similar(x, promote_type(eltype(A),eltype(x)), axes(A)[1])
     mul!(y, A, x)
 end
+
 function Base.:*(A::Adjoint{T,U}, x::AbstractVector) where {T,U<:ColumnBlockArray}
     y = similar(x, promote_type(eltype(A),eltype(x)), Base.OneTo(size(A,1)))
     mul!(y, A, x)
@@ -37,18 +39,21 @@ function Base.:*(A::Adjoint{T,U}, x::AbstractBlockVector) where {T,U<:ColumnBloc
     mul!(y, A, x)
 end
 
-function LinearAlgebra.mul!(y::AbstractBlockVector, A::ColumnBlockArray, x::AbstractVector, α::Number, β::Number)
-    @assert α == 1
-    @assert iszero(β)
+# catch the five-argument call and simplify (throw an error if not applicable)
+function LinearAlgebra.mul!(y::AbstractVector, A::ColumnBlockArray, x::AbstractVector, α::Number, β::Number)
+    @assert (α == 1) && iszero(β)
+    mul!(y, A, x)
+end
+function LinearAlgebra.mul!(y::AbstractVector, A::Adjoint{T,U}, x::AbstractVector, α::Number, β::Number) where {T,U<:ColumnBlockArray}
+    @assert (α == 1) && iszero(β)
     mul!(y, A, x)
 end
 
-function LinearAlgebra.mul!(y::AbstractVector, A::Adjoint{T,U}, x::AbstractBlockVector, α::Number, β::Number) where {T,U<:ColumnBlockArray}
-    @assert α == 1
-    @assert iszero(β)
-    mul!(y, A, x)
+function LinearAlgebra.mul!(y::AbstractVector, A::ColumnBlockArray, x::AbstractVector)
+    y2 = PseudoBlockVector(y, blocksizes(A)[1])
+    mul!(y2, A, x)
+    y
 end
-
 function LinearAlgebra.mul!(y::AbstractBlockVector, A::ColumnBlockArray, x::AbstractVector)
     m, n = size(A)
     if axes(y)[1] != axes(A)[1]
@@ -64,6 +69,11 @@ function LinearAlgebra.mul!(y::AbstractBlockVector, A::ColumnBlockArray, x::Abst
     y
 end
 
+function LinearAlgebra.mul!(y::AbstractVector, A::Adjoint{T,U}, x::AbstractVector) where {T,U<:ColumnBlockArray}
+    F = parent(A)
+    x2 = PseudoBlockVector(x, blocksizes(F)[1])
+    mul!(y, A, x2)
+end
 function LinearAlgebra.mul!(y::AbstractVector, A::Adjoint{T,U}, x::AbstractBlockVector) where {T,U<:ColumnBlockArray}
     m, n = size(A)
     if length(y) != m

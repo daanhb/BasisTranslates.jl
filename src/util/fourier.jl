@@ -51,9 +51,7 @@ function check_dimensions(m, n, y, x)
 end
 
 function LinearAlgebra.mul!(y::AbstractVector, F::NormalizedDFT{T}, x::AbstractVector, α::Number, β::Number) where {T}
-    m, n = size(F)
-    check_dimensions(m, n, y, x)
-    normalized_dft!(n, T, y, x)
+    mul!(y, F, x)
     if α != 1
         y .= α .* y
     end
@@ -62,16 +60,26 @@ function LinearAlgebra.mul!(y::AbstractVector, F::NormalizedDFT{T}, x::AbstractV
     end
     y
 end
+function LinearAlgebra.mul!(y::AbstractVector, F::NormalizedDFT{T}, x::AbstractVector) where {T}
+    m, n = size(F)
+    check_dimensions(m, n, y, x)
+    normalized_dft!(n, T, y, x)
+    y
+end
 
 function LinearAlgebra.mul!(y::AbstractVector, A::NormalizedDFTAdj{T}, x::AbstractVector, α::Number, β::Number) where {T}
-    n = size(A, 1)
-    normalized_idft!(n, T, y, x)
+    mul!(y, A, x)
     if α != 1
         y .= α .* y
     end
     if !iszero(β)
         y .= y .+ β .* x
     end
+    y
+end
+function LinearAlgebra.mul!(y::AbstractVector, A::NormalizedDFTAdj{T}, x::AbstractVector) where {T}
+    n = size(A, 1)
+    normalized_idft!(n, T, y, x)
     y
 end
 
@@ -121,6 +129,35 @@ function Base.:*(F::BlockFourierMatrix, x::AbstractBlockVector)
     y = similar(x, promote_type(eltype(F),eltype(x)))
     LinearAlgebra.mul!(y, F, x)
 end
+function Base.:*(F::BlockFourierMatrix, x::AbstractVector)
+    x2 = PseudoBlockVector(x, blocksizes(F)[2])
+    y = similar(x2, promote_type(eltype(F),eltype(x2)))
+    LinearAlgebra.mul!(y, F, x2)
+end
+
+# five argument call: catch and simply (throw an error if not applicable)
+function LinearAlgebra.mul!(y::AbstractVector, F::BlockFourierMatrix{T}, x::AbstractVector, α::Number, β::Number) where {T}
+    @assert (α == 1) && iszero(β)
+    mul!(y, F, x)
+end
+# convert regular arrays to block arrays
+function LinearAlgebra.mul!(y::AbstractVector, F::BlockFourierMatrix{T}, x::AbstractVector) where {T}
+    x2 = PseudoBlockVector(x, blocksizes(F)[2])
+    y2 = PseudoBlockVector(y, blocksizes(F)[1])
+    mul!(y2, F, x2)
+    y
+end
+function LinearAlgebra.mul!(y::AbstractVector, F::BlockFourierMatrix{T}, x::AbstractBlockVector) where {T}
+    y2 = PseudoBlockVector(y, blocksizes(F)[1])
+    mul!(y2, F, x)
+    y
+end
+function LinearAlgebra.mul!(y::AbstractBlockVector, F::BlockFourierMatrix{T}, x::AbstractVector) where {T}
+    x2 = PseudoBlockVector(x, blocksizes(F)[2])
+    mul!(y, F, x2)
+end
+
+# and now comes the real implementation
 function LinearAlgebra.mul!(y::AbstractBlockVector, F::BlockFourierMatrix{T}, x::AbstractBlockVector) where {T}
     @assert axes(x)[1] == axes(y)[1] == axes(F)[2]
     s, n = F.s, F.n
@@ -134,6 +171,39 @@ function Base.:*(A::BlockFourierMatrixAdj, x::AbstractBlockVector)
     y = similar(x, promote_type(eltype(A),eltype(x)))
     LinearAlgebra.mul!(y, A, x)
 end
+function Base.:*(A::BlockFourierMatrixAdj, x::AbstractVector)
+    F = parent(A)
+    x2 = PseudoBlockVector(x, blocksizes(F)[1])
+    y = similar(x2, promote_type(eltype(A),eltype(x2)))
+    LinearAlgebra.mul!(y, A, x2)
+end
+
+# catch the five-argument call
+function LinearAlgebra.mul!(y::AbstractVector, A::BlockFourierMatrixAdj, x::AbstractVector, α::Number, β::Number)
+    @assert (α == 1) && iszero(β)
+    mul!(y, A, x)
+end
+
+# convert vectors to block vectors if necessary
+function LinearAlgebra.mul!(y::AbstractVector, A::BlockFourierMatrixAdj{T}, x::AbstractVector) where {T}
+    F = parent(A)
+    x2 = PseudoBlockVector(x, blocksizes(F)[1])
+    y2 = PseudoBlockVector(y, blocksizes(F)[2])
+    mul!(y2, A, x2)
+    y
+end
+function LinearAlgebra.mul!(y::AbstractBlockVector, A::BlockFourierMatrixAdj{T}, x::AbstractVector) where {T}
+    F = parent(A)
+    x2 = PseudoBlockVector(x, blocksizes(F)[1])
+    mul!(y, A, x2)
+end
+function LinearAlgebra.mul!(y::AbstractVector, A::BlockFourierMatrixAdj{T}, x::AbstractBlockVector) where {T}
+    F = parent(A)
+    y2 = PseudoBlockVector(y, blocksizes(F)[2])
+    mul!(y2, A, x)
+    y
+end
+
 function LinearAlgebra.mul!(y::AbstractBlockVector, A::BlockFourierMatrixAdj{T}, x::AbstractBlockVector) where {T}
     F = parent(A)
     @assert axes(x)[1] == axes(y)[1] == axes(F)[2]

@@ -29,25 +29,23 @@ function blockcirculant(A::MultiRowCirculant)
 end
 
 "Convert the given matrix into a block circulant matrix."
-function blockrowselection(A::MultiRowCirculant)
+function rowpermutation(A::MultiRowCirculant)
     s, n = nblocks(A), blockdim(A)
-    L = s*n
-    shifted_grids = [k:s:L for k in 1:s]
-    ops = StridedRows.(L, shifted_grids)
+    ops = StridedRows.(s*n, s, 1:s)
     mortar(reshape(ops, s, 1))
 end
 
 
-const MultiRowPermutationArray = BlockMatrix{Bool, Matrix{StridedRows}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
+const RowPermutationArray = BlockMatrix{Bool, Matrix{StridedRows}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
 
 """
 Factorization of a multi-row circulant matrix.
 
 The multi-row ciculant matrix `A` corresponds to a column-block circulant
-matrix `B = R*A` and `A = R'*B`.
+matrix `B = Π*A` and `A = Π'*B`.
 The matrix `B` is block-diagonalized using block Fourier, `P'*B*F = D`.
 
-The complete factorization satisfies `A = R'*P*D*F`.
+The complete factorization satisfies `A = Π'*P*D*F`.
 """
 struct MultiRowCirculantFactorization{T} <: LinearAlgebra.Factorization{T}
     A       ::  MultiRowCirculant{T}
@@ -56,7 +54,7 @@ struct MultiRowCirculantFactorization{T} <: LinearAlgebra.Factorization{T}
     Dpinv   ::  BlockDiagonalAdj{Complex{T}}
     F       ::  NormalizedDFT{T}
     P       ::  BlockFourierMatrix{T}
-    R       ::  MultiRowPermutationArray
+    Π       ::  RowPermutationArray
 end
 
 nblocks(F::MultiRowCirculantFactorization) = nblocks(F.A)
@@ -69,15 +67,15 @@ function LinearAlgebra.factorize(A::MultiRowCirculant{T}) where {T}
     Dpinv = pinv(D)
     F = NormalizedDFT{T}(n)
     P = BlockFourierMatrix{T}(s, n)
-    R = blockrowselection(A)
-    MultiRowCirculantFactorization(A, B, D, Dpinv, F, P, R)
+    Π = rowpermutation(A)
+    MultiRowCirculantFactorization(A, B, D, Dpinv, F, P, Π)
 end
 
 import LinearAlgebra: \
+
 # solve x = A \ b
 function (\)(Fact::MultiRowCirculantFactorization, b::AbstractVector)
-    # turn b into blockvector
-    c = Fact.P' * (Fact.R * b)
+    c = Fact.P' * (Fact.Π * b)
     y = Fact.Dpinv * c
     x = Fact.F * y
     isreal(b) ? real(x) : x
