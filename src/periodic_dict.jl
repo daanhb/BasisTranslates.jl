@@ -29,10 +29,18 @@ interpolation_grid(Φ::PeriodicTranslates) = translates_grid(Φ)
 oversampling_grid(Φ::PeriodicTranslates, s::Int) =
     resize(interpolation_grid(Φ), s*length(Φ))
 
+"""
+Without linear scaling the kernel function `φ` is translated to all the centers,
+`φ(x-k/n)`. In this case the translates have the same shape regardless of `n`.
+
+With linear scaling the translates are defined by `φ(n*x - k)`. In this case
+the support of the translates is inversely proportional to `n`.
+"""
+linearscaling(Φ::PeriodicTranslates) = true
+
 "The map from [0,1] to the domain of the kernel for index `i`."
-translate_map(Φ::PeriodicTranslates, i) = AffineMap{prectype(Φ)}(Φ.n, -(i-1))
-# By default the map is phi(n*x-k), so that the definition of the
-# kernel function may be independent of n.
+translate_map(Φ::PeriodicTranslates, i) =
+    linearscaling(Φ) ? AffineMap{prectype(Φ)}(Φ.n, -(i-1)) : Translation(-(i-one(prectype(Φ)))/length(Φ))
 
 translate_map_inverse(Φ::PeriodicTranslates, i) = inverse(translate_map(Φ, i))
 
@@ -169,4 +177,33 @@ function evaluation(::Type{T}, Φ::PeriodicTranslates, gb::GridBasis, grid::Unit
     else
         BasisFunctions.dense_evaluation(T, Φ, gb; options...)
     end
+end
+
+"""
+Approximate the given function `f` on the interval `[t1,t2] ⊂ [0,1]` using `n`
+centers on `[0,1]` and with a factor `osf` of oversampling.
+"""
+function az_approximate(basis::PeriodicTranslates, f, t1, t2, osf)
+    n = length(basis)
+    tt = oversampling_grid(basis, osf)
+
+    # Compute the restriction R from the large grid to the subgrid
+    I1 = findfirst(tt .>= t1)
+    I2 = findlast(tt .<= t2)
+    R = ContiguousRows(length(tt), I1:I2)
+    tt_int = R*tt
+
+    # Compute the factorization of A using its block-circulant structure
+    Acirc = matrix(evaluation(basis, tt))
+    F = factorize(Acirc)
+
+    # This leads to an (A,Z) pair on [0,1]
+    AZ_A = R*(F.Π'*(F.P*(F.D*LinearMap(F.F'))))
+    AZ_Zstar = F.F*(F.Dpinv*(F.P'*(F.Π*LinearMap(R'))))
+
+    b = f.(tt_int)
+    c = az(AZ_A, AZ_Zstar, b)
+    F = Expansion(basis, c)
+
+    F
 end

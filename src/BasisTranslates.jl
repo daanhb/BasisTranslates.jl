@@ -3,12 +3,15 @@ module BasisTranslates
 using AbstractFFTs, BlockArrays, LinearAlgebra, LinearMaps
 using BasisFunctions, DomainSets
 
+LinearMap = LinearMaps.LinearMap
+
 # From utilities
 export PeriodicInterval
 
 # From the generic code
 export translates_grid,
-    translate_center
+    translate_center,
+    az_approximate
 
 # utilities
 include("util/common.jl")
@@ -21,6 +24,7 @@ include("util/multicirculant.jl")
 include("az.jl")
 include("dictionary.jl")
 include("periodic_dict.jl")
+include("kernel.jl")
 
 # submodules
 include("modules/BSplines/BSplines.jl")

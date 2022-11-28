@@ -21,10 +21,7 @@ kernel_eval_derivative(Φ::PeriodicRBFs, order, x) =
 _kernel_eval_derivative(rbf::RBF, epsilon, order, x) =
     epsilon^order*kernel_eval_derivative(rbf, order, epsilon*x)
 
-"The map from [0,1] to the domain of the kernel for index `i`."
-BasisTranslates.translate_map(Φ::PeriodicRBFs, i) =
-    Translation(-(i-one(prectype(Φ)))/length(Φ))
-
+BasisTranslates.linearscaling(Φ::PeriodicRBFs) = false
 
 
 "A dictionary of periodic Gaussian RBFs."
@@ -35,5 +32,5 @@ end
 
 rbf_kernel(Φ::PeriodicGaussians) = Gaussian()
 
-"Optimal value of the linear scaling constant."
-optimal_linear_scaling(n, τ) = 2pi / sqrt(2*pi*log(1+τ^(-2)))
+"Optimal value of the linear scaling constant for Gaussian approximations."
+optimal_ga_scaling(n, τ) = 2pi / sqrt(2*pi*log(1+τ^(-2)))
