@@ -1,4 +1,10 @@
 
+import BasisFunctions:
+    support,
+    unsafe_eval_element,
+    unsafe_eval_element_derivative,
+    evaluation
+
 "Supertype of a basis of translates."
 abstract type Translates{S,T} <: Dictionary{S,T} end
 
@@ -7,15 +13,25 @@ function translates_grid() end
 
 translate_center(Φ::Translates, i) = translates_grid(Φ)[i]
 
+Base.size(Φ::Translates) = (length(translates_grid(Φ)),)
+
 # The natural index is that of the grid of centers
 BasisFunctions.ordering(Φ::Translates) = eachindex(translates_grid(Φ))
 
-function BasisFunctions.unsafe_eval_element(Φ::Translates{S,T}, idx, x) where {S,T}
+translate_map(Φ::Translates, i) = Translation(-translate_center(Φ, i))
+
+function unsafe_eval_element(Φ::Translates, idx, x)
     m = translate_map(Φ, idx)
     kernel_eval(Φ, m(x))
 end
 
-BasisFunctions.support(Φ::Translates) = coverdomain(translates_grid(Φ))
+function unsafe_eval_element_derivative(Φ::Translates, idx, x, order)
+    m = translate_map(Φ, idx)
+    kernel_eval_derivative(Φ, m(x), order)
+end
+
+
+support(Φ::Translates) = coverdomain(translates_grid(Φ))
 BasisFunctions.hasmeasure(Φ::Translates) = true
 BasisFunctions.measure(Φ::Translates) = lebesguemeasure(support(Φ))
 

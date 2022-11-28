@@ -128,14 +128,14 @@ end
 Evaluate the `d`th derivative of the B-spline of degree `n`,
 in the point `x`.
 """
-function eval_bspline_derivative(n::Int, d::Int, x, ::Type{T} = _prectype(x)) where {T}
+function eval_bspline_derivative(n::Int, x, order::Int, ::Type{T} = _prectype(x)) where {T}
     @assert n >= 0
-    @assert d >= 0
-    if d > n
+    @assert order >= 0
+    if order > n
         zero(T)
-    elseif d == 0
+    elseif order == 0
         eval_bspline(n, x, T)
-    elseif d == n
+    elseif order == n
         xfl = floor(Int, x)
         if xfl < 0 || xfl > n
             T(0)
@@ -144,8 +144,8 @@ function eval_bspline_derivative(n::Int, d::Int, x, ::Type{T} = _prectype(x)) wh
         end
     else
         # reduce degree
-        T(d)/T(n)*(eval_bspline_derivative(n-1, d-1, x, T) - eval_bspline_derivative(n-1, d-1, x-1, T)) +
-            (T(n+1)-T(x))/T(n)*eval_bspline_derivative(n-1, d, x-1, T) + T(x)/T(n)*eval_bspline_derivative(n-1, d, x, T)
+        T(d)/T(n)*(eval_bspline_derivative(n-1, x, order-1, T) - eval_bspline_derivative(n-1, x-1, order-1, T)) +
+            (T(n+1)-T(x))/T(n)*eval_bspline_derivative(n-1, x-1, order, T) + T(x)/T(n)*eval_bspline_derivative(n-1, x, order, T)
     end
 end
 
@@ -297,22 +297,22 @@ end
 """
 Evaluate the `d`th derivative of the periodic B-spline of degree `n` in `x`.
 """
-function eval_periodic_bspline_derivative(n::Int, d::Int, x, period, ::Type{T} = _prectype(x,period)) where {T}
+function eval_periodic_bspline_derivative(n::Int, x, period, order::Int, ::Type{T} = _prectype(x,period)) where {T}
     x = periodize(x, period)
-    sum(eval_bspline_derivative(n, d, x+period*k, T) for k in 0:floor(Int, (n+1-x)/period); init=zero(T))
+    sum(eval_bspline_derivative(n, x+period*k, order, T) for k in 0:floor(Int, (n+1-x)/period); init=zero(T))
 end
 
 """
 Evaluate the `d`th derivative of the periodic centered B-spline of degree `n`,
 with the given `period`, in the point `x`.
 """
-eval_periodic_centered_bspline_derivative(n::Int, d::Int, x, period, ::Type{T} = _prectype(x,period)) where {T} =
-    eval_periodic_bspline_derivative(n, d, x+T(n+1)/2, period, T)
+eval_periodic_centered_bspline_derivative(n::Int, x, period, order::Int, ::Type{T} = _prectype(x,period)) where {T} =
+    eval_periodic_bspline_derivative(n, x+T(n+1)/2, period, order, T)
 
 
 """
 Evaluate the `d`th derivative of the centered B-spline of degree `n`,
 with the given `period`, in the point `x`.
 """
-eval_centered_bspline_derivative(n::Int, d::Int, x, ::Type{T} = _prectype(x)) where {T} =
-    eval_bspline_derivative(n, d, x+T(n+1)/2, T)
+eval_centered_bspline_derivative(n::Int, x, order::Int, ::Type{T} = _prectype(x)) where {T} =
+    eval_bspline_derivative(n, x+T(n+1)/2, order, T)

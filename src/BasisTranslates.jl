@@ -29,5 +29,6 @@ include("kernel.jl")
 # submodules
 include("modules/BSplines/BSplines.jl")
 include("modules/RadialBasisFunctions/RadialBasisFunctions.jl")
+include("modules/RationalFunctions/RationalFunctions.jl")
 
 end

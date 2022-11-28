@@ -34,8 +34,6 @@ semicentered_shift(Φ::PeriodicBSplines{T}) where {T} =
 BasisTranslates.translate_map(Φ::PeriodicBSplines, i) =
     AffineMap(length(Φ), -(i-1) + semicentered_shift(Φ))
 
-# BasisTranslates.kerneldomain_period(Φ::PeriodicBSplines) =
-
 # this version is slightly more accurate than the default
 function BasisFunctions.support(Φ::PeriodicBSplines, idx)
     shift = semicentered_shift(Φ)
@@ -46,5 +44,5 @@ end
 BasisTranslates.kernel_eval(Φ::PeriodicBSplines{T}, x) where {T} =
     eval_bspline(spline_degree(Φ), x, T)
 
-BasisTranslates.kernel_eval_derivative(Φ::PeriodicBSplines{T}, order, x) where {T} =
-    eval_bspline_derivative(spline_degree(Φ), order, x, T)
+BasisTranslates.kernel_eval_derivative(Φ::PeriodicBSplines{T}, x, order) where {T} =
+    eval_bspline_derivative(spline_degree(Φ), x, order, T)

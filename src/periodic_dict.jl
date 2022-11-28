@@ -1,14 +1,10 @@
 
 import BasisFunctions:
-    support,
     isperiodic, period,
-    unsafe_eval_element,
-    unsafe_eval_element_derivative,
     interpolation_grid,
     hasgrid_transform,
     transform_to_grid,
-    transform_from_grid,
-    evaluation
+    transform_from_grid
 
 """
 Supertype of periodized translates of a single kernel function.
@@ -113,16 +109,16 @@ function periodized_kernel_eval(Φ::PeriodicTranslates, x)
 end
 
 "Evaluate the derivative of the periodized kernel."
-function periodized_kernel_eval_derivative(Φ::PeriodicTranslates, order, x)
+function periodized_kernel_eval_derivative(Φ::PeriodicTranslates, x, order)
     k_left, k_right = nb_overlapping_kernels(Φ, x)
     P = kerneldomain_period(Φ)
-    z = kernel_eval_derivative(Φ, order, x)
+    z = kernel_eval_derivative(Φ, x, order)
     for k in 1:k_right
-        z1 = kernel_eval_derivative(Φ, order, x-k*P)
+        z1 = kernel_eval_derivative(Φ, x-k*P, order)
         z += z1
     end
     for k in 1:k_left
-        z1 = kernel_eval_derivative(Φ, order, x+k*P)
+        z1 = kernel_eval_derivative(Φ, x+k*P, order)
         z += z1
     end
     z
@@ -140,15 +136,15 @@ function undo_periodic_wrapping(Φ::PeriodicTranslates, y)
 end
 
 function unsafe_eval_element(Φ::PeriodicTranslates, idx, x)
-    m = translate_map(Φ::PeriodicTranslates, idx)
+    m = translate_map(Φ, idx)
     y = undo_periodic_wrapping(Φ, m(x))
     periodized_kernel_eval(Φ, y)
 end
 
 function unsafe_eval_element_derivative(Φ::PeriodicTranslates, idx, x, order)
-    m = translate_map(Φ::PeriodicTranslates, idx)
+    m = translate_map(Φ, idx)
     y = undo_periodic_wrapping(Φ, m(x))
-    periodized_kernel_eval_derivative(Φ, order, y)
+    periodized_kernel_eval_derivative(Φ, y, order)
 end
 
 

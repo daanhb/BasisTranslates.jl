@@ -2,17 +2,17 @@
 abstract type RBF
 end
 
-function kernel_eval_derivative(rbf::RBF, order::Int, r)
+function kernel_eval_derivative(rbf::RBF, x, order::Int)
     if order == 0
-        kernel_eval(rbf, r)
+        kernel_eval(rbf, x)
     elseif order == 1
-        kernel_eval_diff1(rbf, r)
+        kernel_eval_diff1(rbf, x)
     elseif order == 2
-        kernel_eval_diff2(rbf, r)
+        kernel_eval_diff2(rbf, x)
     elseif order == 3
-        kernel_eval_diff3(rbf, r)
+        kernel_eval_diff3(rbf, x)
     elseif order == 4
-        kernel_eval_diff4(rbf, r)
+        kernel_eval_diff4(rbf, x)
     else
         error("High order differentiation not implemented.")
     end

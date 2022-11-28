@@ -16,10 +16,10 @@ kernel_eval(Φ::PeriodicRBFs, x) =
     _kernel_eval(rbf_kernel(Φ), shape_parameter(Φ), x)
 _kernel_eval(rbf::RBF, epsilon, x) = kernel_eval(rbf, epsilon*x)
 
-kernel_eval_derivative(Φ::PeriodicRBFs, order, x) =
-    _kernel_eval_derivative(rbf_kernel(Φ), shape_parameter(Φ), order, x)
-_kernel_eval_derivative(rbf::RBF, epsilon, order, x) =
-    epsilon^order*kernel_eval_derivative(rbf, order, epsilon*x)
+kernel_eval_derivative(Φ::PeriodicRBFs, x, order::Int) =
+    _kernel_eval_derivative(rbf_kernel(Φ), shape_parameter(Φ), x, order)
+_kernel_eval_derivative(rbf::RBF, epsilon, x, order) =
+    epsilon^order*kernel_eval_derivative(rbf, epsilon*x, order)
 
 BasisTranslates.linearscaling(Φ::PeriodicRBFs) = false
 
