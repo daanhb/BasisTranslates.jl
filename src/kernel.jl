@@ -1,5 +1,33 @@
 
 "Dictionary of translates of a given kernel function."
+struct KernelTranslates{S,T,K} <: Translates{S,T}
+    kernel      ::  K
+    centers     ::  Vector{S}
+    support     ::  Domain{S}
+end
+
+KernelTranslates(kernel, centers::AbstractVector) =
+    KernelTranslates(kernel, centers, UnitInterval{eltype(centers)}())
+KernelTranslates(kernel, centers::AbstractVector{S}, support::Domain{T}) where {S,T} =
+    KernelTranslates{promote_type(S,T)}(kernel, centers, support)
+KernelTranslates{S}(kernel, centers, support) where {S} =
+    KernelTranslates{S,S}(kernel, centers, support)
+KernelTranslates{S,T}(kernel, centers, support) where {S,T} =
+    KernelTranslates{S,T,typeof(kernel)}(kernel, centers, support)
+
+kernel(Φ::KernelTranslates) = Φ.kernel
+
+translates_grid(Φ::KernelTranslates) = Φ.centers
+
+support(Φ::KernelTranslates) = Φ.support
+
+kernel_support(Φ::KernelTranslates) = support(Φ)
+kernel_eval(Φ::KernelTranslates, x) = kernel_eval(kernel(Φ), x)
+kernel_eval_derivative(Φ::KernelTranslates, x, order) =
+    kernel_eval_derivative(kernel(Φ), x, order)
+
+
+"Dictionary of periodized translates of a given kernel function."
 struct PeriodicKernelTranslates{S,T,K} <: PeriodicTranslates{S,T}
     kernel      ::  K
     n           ::  Int

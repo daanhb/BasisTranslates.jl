@@ -11,7 +11,9 @@ export PeriodicInterval
 # From the generic code
 export translates_grid,
     translate_center,
-    az_approximate
+    az_approximate,
+    KernelTranslates,
+    PeriodicKernelTranslates
 
 # utilities
 include("util/common.jl")

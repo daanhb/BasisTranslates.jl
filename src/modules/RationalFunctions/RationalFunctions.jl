@@ -12,12 +12,9 @@ import BasisTranslates:
 
 export PartialFractions,
     poles,
-    uniform_poles,
-    tapered_poles
-
-"The L1 norm."
-struct L1Norm
-end
+    lightning_uniform_poles,
+    lightning_tapered_poles,
+    lightning_samples
 
 include("partialfractions.jl")
 include("lightning.jl")

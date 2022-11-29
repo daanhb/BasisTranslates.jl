@@ -7,6 +7,8 @@ struct PeriodicBSplines{T} <: BasisTranslates.PeriodicTranslates{T,T}
     n       ::  Int
 end
 
+PeriodicBSplines(; degree, n) = PeriodicBSplines(n, degree)
+
 PeriodicBSplines(degree::Int, n::Int) =
     PeriodicBSplines{Float64}(degree, n)
 

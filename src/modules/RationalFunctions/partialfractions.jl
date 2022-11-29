@@ -21,10 +21,10 @@ kernel_eval(Φ::PartialFractions, x) = 1/x
 
 function BasisFunctions.dict_norm(Φ::PartialFractions, idx, p::Real)
     @boundscheck checkbounds(Φ, idx)
-    @assert (p == 1) || (p==2)
+    @assert (p == Inf) || (p==2)
     @assert support(Φ) == 0..1
     c = -Φ.poles[idx]
-    if p == 1
+    if p == Inf
         abs(1/c)
     else
         sqrt(-1/(c+1) + 1/c)

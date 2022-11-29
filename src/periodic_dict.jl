@@ -34,7 +34,6 @@ the support of the translates is inversely proportional to `n`.
 """
 linearscaling(Φ::PeriodicTranslates) = true
 
-"The map from [0,1] to the domain of the kernel for index `i`."
 translate_map(Φ::PeriodicTranslates, i) =
     linearscaling(Φ) ? AffineMap{prectype(Φ)}(Φ.n, -(i-1)) : Translation(-(i-one(prectype(Φ)))/length(Φ))
 
