@@ -6,7 +6,8 @@ using BasisFunctions, DomainSets
 LinearMap = LinearMaps.LinearMap
 
 import BasisFunctions:
-    isperiodic, period
+    isperiodic, period,
+    support
 
 # From utilities
 export PeriodicInterval
@@ -40,5 +41,6 @@ include("az.jl")
 include("modules/BSplines/BSplines.jl")
 include("modules/RadialBasisFunctions/RadialBasisFunctions.jl")
 include("modules/RationalFunctions/RationalFunctions.jl")
+include("modules/RefinableFunctions/RefinableFunctions.jl")
 
 end
