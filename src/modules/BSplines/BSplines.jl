@@ -19,6 +19,7 @@ export eval_bspline,
 
 include("bspline_defs.jl")
 include("integral.jl")
+include("kernel.jl")
 include("dict.jl")
 
 end

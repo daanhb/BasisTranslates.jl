@@ -5,6 +5,7 @@ using ..BasisTranslates
 using BasisFunctions, DomainSets
 
 import BasisTranslates:
+    kernel,
     kernel_eval,
     kernel_eval_derivative,
     kernel_support,

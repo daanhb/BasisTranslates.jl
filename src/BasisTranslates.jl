@@ -11,6 +11,7 @@ export PeriodicInterval
 # From the generic code
 export translates_grid,
     translate_center,
+    kernel,
     az_approximate,
     KernelTranslates,
     PeriodicKernelTranslates
@@ -18,15 +19,19 @@ export translates_grid,
 # utilities
 include("util/common.jl")
 include("util/periodicinterval.jl")
+include("util/domains.jl")
 include("util/fourier.jl")
 include("util/permutations.jl")
 include("util/blockarrays.jl")
 include("util/multicirculant.jl")
 
-include("az.jl")
+include("kernel.jl")
+include("periodization.jl")
 include("dictionary.jl")
 include("periodic_dict.jl")
-include("kernel.jl")
+include("generic_dict.jl")
+
+include("az.jl")
 
 # submodules
 include("modules/BSplines/BSplines.jl")

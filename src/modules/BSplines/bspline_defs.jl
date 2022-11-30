@@ -125,8 +125,7 @@ function eval_bspline_degree4(x, ::Type{T} = _prectype(x)) where {T}
 end
 
 """
-Evaluate the `d`th derivative of the B-spline of degree `n`,
-in the point `x`.
+Evaluate the derivative of the B-spline of degree `n` in the point `x`.
 """
 function eval_bspline_derivative(n::Int, x, order::Int, ::Type{T} = _prectype(x)) where {T}
     @assert n >= 0
@@ -144,7 +143,7 @@ function eval_bspline_derivative(n::Int, x, order::Int, ::Type{T} = _prectype(x)
         end
     else
         # reduce degree
-        T(d)/T(n)*(eval_bspline_derivative(n-1, x, order-1, T) - eval_bspline_derivative(n-1, x-1, order-1, T)) +
+        T(order)/T(n)*(eval_bspline_derivative(n-1, x, order-1, T) - eval_bspline_derivative(n-1, x-1, order-1, T)) +
             (T(n+1)-T(x))/T(n)*eval_bspline_derivative(n-1, x-1, order, T) + T(x)/T(n)*eval_bspline_derivative(n-1, x, order, T)
     end
 end
@@ -295,7 +294,7 @@ end
 
 
 """
-Evaluate the `d`th derivative of the periodic B-spline of degree `n` in `x`.
+Evaluate the derivative of the periodic B-spline of degree `n` in `x`.
 """
 function eval_periodic_bspline_derivative(n::Int, x, period, order::Int, ::Type{T} = _prectype(x,period)) where {T}
     x = periodize(x, period)
@@ -303,7 +302,7 @@ function eval_periodic_bspline_derivative(n::Int, x, period, order::Int, ::Type{
 end
 
 """
-Evaluate the `d`th derivative of the periodic centered B-spline of degree `n`,
+Evaluate the derivative of the periodic centered B-spline of degree `n`,
 with the given `period`, in the point `x`.
 """
 eval_periodic_centered_bspline_derivative(n::Int, x, period, order::Int, ::Type{T} = _prectype(x,period)) where {T} =
@@ -311,7 +310,7 @@ eval_periodic_centered_bspline_derivative(n::Int, x, period, order::Int, ::Type{
 
 
 """
-Evaluate the `d`th derivative of the centered B-spline of degree `n`,
+Evaluate the derivative of the centered B-spline of degree `n`,
 with the given `period`, in the point `x`.
 """
 eval_centered_bspline_derivative(n::Int, x, order::Int, ::Type{T} = _prectype(x)) where {T} =

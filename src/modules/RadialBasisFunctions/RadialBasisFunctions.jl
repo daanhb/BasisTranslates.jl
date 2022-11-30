@@ -3,6 +3,7 @@ module RadialBasisFunctions
 using ..BasisTranslates
 
 using BasisFunctions, DomainSets
+using LinearAlgebra
 
 export MQ,
     IMQ,
@@ -14,6 +15,7 @@ export MQ,
     PeriodicGaussians
 
 import BasisTranslates:
+    kernel,
     kernel_eval,
     kernel_eval_derivative,
     kernel_support,

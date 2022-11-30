@@ -9,19 +9,16 @@ Base.size(Φ::PeriodicRBFs) = (Φ.n,)
 "What is the shape parameter of the kernels?"
 shape_parameter(Φ::PeriodicRBFs) = Φ.epsilon
 
-kernel_support_approximate(Φ::PeriodicRBFs, threshold = eps(prectype(Φ))) =
-    support_approximate(rbf_kernel(Φ), threshold) / shape_parameter(Φ)
-
-kernel_eval(Φ::PeriodicRBFs, x) =
-    _kernel_eval(rbf_kernel(Φ), shape_parameter(Φ), x)
-_kernel_eval(rbf::RBF, epsilon, x) = kernel_eval(rbf, epsilon*x)
-
-kernel_eval_derivative(Φ::PeriodicRBFs, x, order::Int) =
-    _kernel_eval_derivative(rbf_kernel(Φ), shape_parameter(Φ), x, order)
-_kernel_eval_derivative(rbf::RBF, epsilon, x, order) =
-    epsilon^order*kernel_eval_derivative(rbf, epsilon*x, order)
-
 BasisTranslates.linearscaling(Φ::PeriodicRBFs) = false
+
+function BasisTranslates.translate_map(Φ::PeriodicRBFs, idx)
+    ε = shape_parameter(Φ)
+    AffineMap(ε, -(idx-1)*ε/length(Φ))
+end
+
+# kernel_support_approximate(Φ::PeriodicRBFs, threshold = eps(prectype(Φ))) =
+    # kernel_support_approximate(rbf_kernel(Φ), threshold)
+
 
 
 "A dictionary of periodic Gaussian RBFs."
@@ -30,7 +27,9 @@ struct PeriodicGaussians{T} <: PeriodicRBFs{T}
     n       ::  Int
 end
 
-rbf_kernel(Φ::PeriodicGaussians) = Gaussian()
+BasisTranslates.parent_kernel(Φ::PeriodicGaussians) = Gaussian()
 
 "Optimal value of the linear scaling constant for Gaussian approximations."
-optimal_ga_scaling(n, τ) = 2pi / sqrt(2*pi*log(1+τ^(-2)))
+optimal_ga_scaling(period, τ) = pi / (period*sqrt(2*log(1+τ^(-2))))
+
+# kernel_support(Φ::PeriodicGaussians{T}) where {T} = FullSpace{T}()
