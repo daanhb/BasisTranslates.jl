@@ -17,7 +17,8 @@ export PartialFractions,
     lightning_tapered_poles,
     lightning_samples
 
-include("partialfractions.jl")
+include("kernel.jl")
+include("dict.jl")
 include("lightning.jl")
 
 end
