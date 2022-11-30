@@ -5,6 +5,9 @@ using BasisFunctions, DomainSets
 
 LinearMap = LinearMaps.LinearMap
 
+import BasisFunctions:
+    isperiodic, period
+
 # From utilities
 export PeriodicInterval
 

@@ -39,33 +39,8 @@ PeriodicKernelTranslates{S,T}(kernel, args...) where {S,T} =
 PeriodicKernelTranslates{S,T,K}(kernel::K, n::Int) where {S,T,K} =
     PeriodicKernelTranslates(kernel, n, true)
 
-kernel(Φ::PeriodicKernelTranslates) = Φ.kernel
+parent_kernel(Φ::PeriodicKernelTranslates) = Φ.kernel
 
 Base.size(Φ::PeriodicKernelTranslates) = (Φ.n,)
 
 BasisTranslates.linearscaling(Φ::PeriodicKernelTranslates) = Φ.scaling
-
-kernel_eval(Φ::PeriodicKernelTranslates, x) =
-    kernel_eval(kernel(Φ), x)
-kernel_eval(kernel, x) = kernel(x)
-
-kernel_eval_derivative(Φ::PeriodicKernelTranslates, order, x) =
-    kernel_eval_derivative(kernel(Φ), order, x)
-
-kernel_support(Φ::PeriodicKernelTranslates) = kernel_support(kernel(Φ))
-
-kernel_support_approximate(Φ::PeriodicKernelTranslates) =
-    kernel_support_approximate(kernel(Φ))
-kernel_support_approximate(kernel) = kernel_support(kernel)
-
-
-
-## Application support
-
-"Kernel that represents the derivative of another kernel."
-struct DiffKernel{N,K}
-    kernel  ::  K
-    order   ::  NTuple{N,Int}
-end
-
-kernel_eval(k::DiffKernel{1}, x) = kernel_eval_derivative(k.kernel, x, k.order[1])

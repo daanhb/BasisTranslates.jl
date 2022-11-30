@@ -1,6 +1,5 @@
 
 import BasisFunctions:
-    isperiodic, period,
     interpolation_grid,
     hasgrid_transform,
     transform_to_grid,
