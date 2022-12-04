@@ -8,10 +8,15 @@ struct CompactWavelet{T} <: DiscreteWavelet{T}
     coefficients    ::  VectorSequence{T}
 end
 
-eval_kernel(ψ::CompactWavelet, x) = _eval_kernel(ψ, x, ψ.scalingfunction, ψ.coefficients)
-_eval_kernel(ψ::CompactWavelet, x, φ, coef) =
-    sum(coef[i]*eval_kernel(φ, 2x-i) for i in support(coef))
+kernel_eval(ψ::CompactWavelet, x) = _kernel_eval(ψ, x, ψ.scalingfunction, ψ.coefficients)
+_kernel_eval(ψ::CompactWavelet, x, φ, coef) =
+    sum(coef[i]*kernel_eval(φ, 2x-i) for i in support(coef))
 
+function kernel_support(ψ::CompactWavelet)
+    I = support(coefficients(ψ.scalingfunction))
+    i1, i2 = first(I), last(I)
+    ((1-i2+i1)/2)..((1+i2-i1)/2)
+end
 
 "Form the sequence `(-1)^k h_{n-k}` from the given sequence."
 function alternating_flip(h::CompactSequence, n::Int = 1)
@@ -45,6 +50,8 @@ primal_highpass(mra::MRA) = alternating_flip(dual_lowpass(mra))
 
 "Return the dual high-pass filter of the MRA."
 dual_highpass(mra::MRA) = alternating_flip(primal_lowpass(mra))
+
+scalingfunction(mra::MRA) = Refinable(primal_lowpass(mra))
 
 function analysis_lowpass(mra::MRA, n::Int)
     lo_d = dual_lowpass(mra)

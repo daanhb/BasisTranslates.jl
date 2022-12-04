@@ -15,12 +15,12 @@ import BasisTranslates:
     kernel_eval,
     kernel_eval_derivative,
     kernel_support,
-    kernel_support_approximate,
     coefficients,
     isorthogonal,
     isbiorthogonal
 
-export RefinableFunction
+export RefinableFunction,
+    PeriodicRefinables
 
 include("util/common.jl")
 include("util/conv.jl")

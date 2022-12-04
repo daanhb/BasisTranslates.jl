@@ -3,7 +3,7 @@ function db2(::Type{T} = Float64) where {T}
     sq2 = sqrt(T(2))
     sq3 = sqrt(T(3))
     coef = 1/sq2*[(1+sq3)/4, (3+sq3)/4, (3-sq3)/4, (1-sq3)/4]
-    Refinable(coef)
+    VectorSequence(coef)
 end
 
 bspline_refinable_coefficients(degree::Int, ::Type{T} = Float64) where {T} =
@@ -19,5 +19,5 @@ function bspline(degree::Int, ::Type{T} = Float64) where {T}
         # we make the filter causal
         I = 0:length(coef)-1
     end
-    Refinable(VectorSequence(coef, I))
+    VectorSequence(coef, I)
 end

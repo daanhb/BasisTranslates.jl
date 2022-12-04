@@ -20,9 +20,6 @@ end
 "A refinable function with compact support given by its coefficients."
 struct GenericRefinable{T} <: CompactRefinable{T}
     coefficients    ::  VectorSequence{T}
-    fun
-
-    GenericRefinable{T}(coefficients) where {T} = new(coefficients)
 end
 
 GenericRefinable(coef::AbstractVector) =
@@ -30,6 +27,29 @@ GenericRefinable(coef::AbstractVector) =
 
 coefficients(φ::GenericRefinable) = φ.coefficients
 
+
+"""
+A generic refinable function whose evaluation is computed in a fine
+grid upon construction and stored for quick evaluation later on.
+"""
+struct EvaluatedRefinable{T} <: CompactRefinable{T}
+    parent  ::  Refinable{T}
+    fun
+    function EvaluatedRefinable{T}(φ::Refinable; levels = 6) where {T}
+        t, vals = eval_dyadic(coefficients(φ), levels)
+        fun = Expansion(RegularBSplines(t, degree=1), vals)
+        new(φ, fun)
+    end
+end
+
+EvaluatedRefinable(φ::Refinable{T}) where {T} = EvaluatedRefinable{T}(φ)
+
+Base.parent(φ::EvaluatedRefinable) = φ.parent
+
+coefficients(φ::EvaluatedRefinable) = coefficients(parent(φ))
+
+kernel_eval(φ::EvaluatedRefinable, x) = _kernel_eval(φ, x, φ.fun)
+_kernel_eval(φ::EvaluatedRefinable, x, fun) = fun(x)
 
 ## Convenience constructors
 
