@@ -1,6 +1,10 @@
 
 const RegularGrid{T} = StepRangeLen{T,Base.TwicePrecision{T},Base.TwicePrecision{T},Int}
 
+isequispacedgrid(centers) = false
+isequispacedgrid(centers::AbstractRange) = true
+isequispacedgrid(centers::BasisFunctions.AbstractEquispacedGrid) = true
+
 # This implementation is provided pending the resolution of #47717 in julia
 # see: https://github.com/JuliaLang/julia/issues/47717
 #

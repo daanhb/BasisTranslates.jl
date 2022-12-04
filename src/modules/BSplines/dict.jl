@@ -20,16 +20,20 @@ end
 RegularBSplines(nodes::AbstractVector; degree = 1) =
     RegularBSplines(nodes, degree)
 
+"The degree of the spline functions."
 spline_degree(Φ::RegularBSplines) = Φ.degree
+
+"The order of a spline is its degree plus one."
 spline_order(Φ) = spline_degree(Φ)+1
+
+"The nodes of regular B-splines."
 nodes(Φ::RegularBSplines) = Φ.nodes
 
 Base.step(Φ::RegularBSplines) = step(Φ.nodes)
 
 centers(Φ::RegularBSplines) = nodes(Φ)
 
-kernel(Φ::RegularBSplines{T}) where {T} =
-    CenteredBSpline{T}(Φ.degree)
+kernel(Φ::RegularBSplines{T}) where {T} = CenteredBSpline{T}(Φ.degree)
 
 # Implement a linear scaling
 function map_to_kernel(Φ::RegularBSplines, i)
@@ -48,7 +52,6 @@ struct PeriodicBSplines{T} <: BasisTranslates.PeriodicTranslates{T,T}
 end
 
 PeriodicBSplines(n::Int; degree) = PeriodicBSplines(n, degree)
-
 PeriodicBSplines(n::Int, degree::Int) =
     PeriodicBSplines{Float64}(n, degree)
 
@@ -56,5 +59,4 @@ Base.size(Φ::PeriodicBSplines) = (Φ.n,)
 
 spline_degree(Φ::PeriodicBSplines) = Φ.degree
 
-parent_kernel(Φ::PeriodicBSplines{T}) where {T} =
-    CenteredBSpline{T}(Φ.degree)
+parent_kernel(Φ::PeriodicBSplines{T}) where {T} = CenteredBSpline{T}(Φ.degree)

@@ -15,20 +15,24 @@ parent_kernel(φ::PeriodizedKernel) = φ.parent
 period(φ::PeriodizedKernel) = φ.period
 
 """
-    k_left, k_right = nb_overlapping_kernels(φ::Kernel, period)
+    k_left, k_right = overlapping_periodic_kernels(φ::Kernel, period)
 
 The number of shifted kernels that overlap, due to periodicity. The functions
 `φ(x + k*P)` may overlap with `φ(x)` for all `k` in `1:k_left`, and similarly
 for `φ(x - k*P)` and `1:k_right`.
 """
-function nb_overlapping_kernels(φ, period)
+function overlapping_periodic_kernels(φ, period)
     a,b = extrema(kernel_support_approximate(φ))
     k = floor(Int, (b-a)/period)
     k, k
 end
 
-"The number of overlapping kernels at a point `x`."
-function nb_overlapping_kernels(φ, period, x)
+"""
+Return the overlapping periodic kernels at a point `x`.
+
+See also: overlapping_periodic_kernels.
+"""
+function overlapping_periodic_kernels(φ, period, x)
     a,b = extrema(kernel_support_approximate(φ))
     k_left = floor(Int, (b-x)/period)
     k_right = floor(Int, (x-a)/period)
@@ -37,7 +41,7 @@ end
 
 "Evaluate the periodization of the given kernel with the given period."
 function periodized_kernel_eval(φ, period, x)
-    k_left, k_right = nb_overlapping_kernels(φ, period, x)
+    k_left, k_right = overlapping_periodic_kernels(φ, period, x)
     z = kernel_eval(φ, x)
     for k in 1:k_right
         z1 = kernel_eval(φ, x-k*period)
@@ -52,7 +56,7 @@ end
 
 "Evaluate the derivative of the periodization of the given kernel."
 function periodized_kernel_eval_derivative(φ, period, x, order)
-    k_left, k_right = nb_overlapping_kernels(φ, period, x)
+    k_left, k_right = overlapping_periodic_kernels(φ, period, x)
     z = kernel_eval_derivative(φ, x, order)
     for k in 1:k_right
         z1 = kernel_eval_derivative(φ, x-k*period, order)

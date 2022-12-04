@@ -88,5 +88,51 @@ hascompactsupport(Φ::Translates) = iscompact(kernel_support(Φ))
 hascompactsupport_approximate(Φ::Translates, threshold...) =
     iscompact(kernel_support_approximate(Φ, threshold...))
 
+"Does the basis of translates have a regular (equispaced) grid?"
+hasregulargrid(Φ::Translates) = isequispacedgrid(centers(Φ))
+
+function Base.step(Φ::Translates)
+    @assert hasregulargrid(Φ)
+    step(centers(Φ))
+end
+
 kerneldomain_center(Φ::Translates, i) =
     to_kernel_domain(Φ, center(Φ, i))
+
+"""
+Return the indices of the basis functions with the given point `x` in
+their support.
+"""
+function overlapping_translates(Φ::Translates, x)
+    if hascompactsupport(Φ)
+        if hasregulargrid(Φ)
+            # find the closest smaller center
+            c1 = center(Φ, 1)
+            h = step(Φ)
+            idx = 1 + floor(Int, (x-c1)/h)
+            idx = max(idx,1)
+            idx = min(idx,length(Φ))
+            c = center(Φ, idx)
+            # x lies in centers[idx]..centers[idx+1]
+            scaled_support = support(Φ, idx)
+            a,b = extrema(scaled_support)
+            i1 = idx - floor(Int, (b-x)/h)
+            i2 = idx + floor(Int, (x-a)/h)
+            max(i1,1):min(i2,length(Φ))
+        else
+            [idx for idx in eachindex(Φ) if x ∈ support(Φ, idx)]
+        end
+    else
+        eachindex(Φ)
+    end
+end
+
+function BasisFunctions.unsafe_eval_expansion(Φ::Translates, coefficients, x)
+    if !isperiodic(Φ) && hascompactsupport(Φ) && hasregulargrid(Φ)
+        # evaluate only non-vanishing basis functions at the point x
+        indices = overlapping_translates(Φ, x)
+        sum(coefficients[idx]*unsafe_eval_element(Φ, idx, x) for idx in indices)
+    else
+        BasisFunctions.default_eval_expansion(Φ, coefficients, x)
+    end
+end
