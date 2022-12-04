@@ -6,7 +6,15 @@ import BasisFunctions:
     evaluation
 
 "Supertype of a basis of translates."
-abstract type Translates{S,T} <: Dictionary{S,T} end
+abstract type Translates{S,T,EXT} <: Dictionary{S,T} end
+
+const PeriodicTranslates{S,T} = Translates{S,T,:periodic}
+const UnitPeriodicTranslates{S,T} = Translates{S,T,:unitperiodic}
+const SimpleTranslates{S,T} = Translates{S,T,:simple}
+
+isperiodic(Φ::Translates) = false
+isperiodic(Φ::PeriodicTranslates) = true
+
 
 "Return the centers of the basis of translates."
 function centers() end
@@ -103,7 +111,7 @@ kerneldomain_center(Φ::Translates, i) =
 Return the indices of the basis functions with the given point `x` in
 their support.
 """
-function overlapping_translates(Φ::Translates, x)
+function overlapping_translates(Φ::SimpleTranslates, x)
     if hascompactsupport(Φ)
         if hasregulargrid(Φ)
             # find the closest smaller center
@@ -127,8 +135,8 @@ function overlapping_translates(Φ::Translates, x)
     end
 end
 
-function BasisFunctions.unsafe_eval_expansion(Φ::Translates, coefficients, x)
-    if !isperiodic(Φ) && hascompactsupport(Φ) && hasregulargrid(Φ)
+function BasisFunctions.unsafe_eval_expansion(Φ::SimpleTranslates, coefficients, x)
+    if hascompactsupport(Φ) && hasregulargrid(Φ)
         # evaluate only non-vanishing basis functions at the point x
         indices = overlapping_translates(Φ, x)
         sum(coefficients[idx]*unsafe_eval_element(Φ, idx, x) for idx in indices)

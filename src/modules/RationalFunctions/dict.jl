@@ -2,7 +2,7 @@
 """
 A dictionary of partial fractions with simple poles.
 """
-struct PartialFractions{T} <: BasisTranslates.Translates{T,T}
+struct PartialFractions{T} <: BasisTranslates.SimpleTranslates{T,T}
     poles   ::  Vector{T}
     support ::  Domain{T}
 end

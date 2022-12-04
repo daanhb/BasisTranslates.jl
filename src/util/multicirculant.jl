@@ -31,7 +31,7 @@ end
 "Convert the given matrix into a block circulant matrix."
 function rowpermutation(A::MultiRowCirculant)
     s, n = nblocks(A), blockdim(A)
-    ops = StridedRows.(s*n, s, 1:s)
+    ops = [StridedRows(s*n; step = s, offset = i) for i in 1:s]
     mortar(reshape(ops, s, 1))
 end
 

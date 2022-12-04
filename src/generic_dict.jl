@@ -1,6 +1,6 @@
 
 "Dictionary of translates of a given kernel function."
-struct KernelTranslates{S,T,K} <: Translates{S,T}
+struct KernelTranslates{S,T,K} <: SimpleTranslates{S,T}
     kernel      ::  K
     centers     ::  Vector{S}
     support     ::  Domain{S}
@@ -23,7 +23,7 @@ support(Φ::KernelTranslates) = Φ.support
 
 
 "Dictionary of periodized translates of a given kernel function."
-struct PeriodicKernelTranslates{S,T,K} <: PeriodicTranslates{S,T}
+struct PeriodicKernelTranslates{S,T,K} <: UnitPeriodicTranslates{S,T}
     kernel      ::  K
     n           ::  Int
     scaling     ::  Bool

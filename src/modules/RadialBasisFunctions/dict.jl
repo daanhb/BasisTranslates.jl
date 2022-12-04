@@ -2,7 +2,7 @@
 """
 A dictionary of periodic radial basis functions on the interval `[0,1]`.
 """
-abstract type PeriodicRBFs{T} <: BasisTranslates.PeriodicTranslates{T,T} end
+abstract type PeriodicRBFs{T} <: BasisTranslates.UnitPeriodicTranslates{T,T} end
 
 Base.size(Φ::PeriodicRBFs) = (Φ.n,)
 
