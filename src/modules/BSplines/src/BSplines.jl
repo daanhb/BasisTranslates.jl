@@ -14,8 +14,10 @@ export eval_bspline,
     eval_periodic_bspline_derivative,
     eval_periodic_centered_bspline,
     eval_periodic_centered_bspline_derivative,
+    RegularBSplines,
     PeriodicBSplines,
-    splinedegree
+    spline_order,
+    spline_degree
 
 include("bspline_defs.jl")
 include("integral.jl")

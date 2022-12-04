@@ -38,9 +38,9 @@ include("generic_dict.jl")
 include("az.jl")
 
 # submodules
-include("modules/BSplines/BSplines.jl")
-include("modules/RadialBasisFunctions/RadialBasisFunctions.jl")
-include("modules/RationalFunctions/RationalFunctions.jl")
-include("modules/RefinableFunctions/RefinableFunctions.jl")
+include("modules/BSplines/src/BSplines.jl")
+include("modules/RadialBasisFunctions/src/RadialBasisFunctions.jl")
+include("modules/RationalFunctions/src/RationalFunctions.jl")
+include("modules/RefinableFunctions/src/RefinableFunctions.jl")
 
 end
