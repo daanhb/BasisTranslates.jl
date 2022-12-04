@@ -8,7 +8,7 @@ import BasisFunctions:
 "Supertype of a basis of translates."
 abstract type Translates{S,T} <: Dictionary{S,T} end
 
-"Return the grid of the basis of translates."
+"Return the centers of the basis of translates."
 function translates_grid() end
 
 translate_center(Φ::Translates, i) = translates_grid(Φ)[i]
@@ -18,7 +18,7 @@ Base.size(Φ::Translates) = (length(translates_grid(Φ)),)
 # The natural index is that of the grid of centers
 BasisFunctions.ordering(Φ::Translates) = eachindex(translates_grid(Φ))
 
-"Map from the domain of the basis to the kernel domain for index `i`."
+"Map from the domain of the basis function to the kernel domain."
 translate_map(Φ::Translates, i) = Translation(-translate_center(Φ, i))
 "Inverse of the `translate_map`."
 translate_map_inverse(Φ::Translates, i) = inverse(translate_map(Φ, i))
@@ -42,7 +42,16 @@ function _eval_deriv(m, Φ, idx, x, order)
     jacobian(m, x)^order * kernel_eval_derivative(Φ, to_kernel_domain(Φ, idx, x), order)
 end
 
-support(Φ::Translates) = coverdomain(translates_grid(Φ))
+function support(Φ::Translates{S}) where {S}
+    if hascompactsupport(Φ)
+        a,b = extrema(kernel_support(Φ))
+        minv1 = translate_map_inverse(Φ, 1)
+        minv2 = translate_map_inverse(Φ, length(Φ))
+        minv1(a)..minv2(b)
+    else
+        FullSpace{S}()
+    end
+end
 
 function support(Φ::Translates, i)
     if hascompactsupport(Φ)

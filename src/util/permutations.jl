@@ -7,6 +7,12 @@ const ExtensionArray = Adjoint{Bool,<:RestrictionArray}
 
 Base.size(A::RestrictionArray) = (length(rowselection(A)), columnlength(A))
 
+firstrow(A::RestrictionArray) = first(rowselection(A))
+lastrow(A::RestrictionArray) = last(rowselection(A))
+
+firstcolumn(A::ExtensionArray) = firstrow(parent(A))
+lastcolumn(A::ExtensionArray) = lastrow(parent(A))
+
 @inline function Base.getindex(A::RestrictionArray, i::Int, j::Int)
     @boundscheck checkbounds(A, i, j)
     j == rowselection(A)[i]
@@ -49,20 +55,42 @@ LinearAlgebra.pinv(A::ExtensionArray) = adjoint(A)
 struct StridedRows <: RestrictionArray
     len         ::  Int
     selection   ::  StepRange{Int,Int}
+
+    function StridedRows(len::Int, selection)
+        @assert first(selection) >= 1
+        @assert last(selection) <= len
+        new(len, selection)
+    end
 end
 
 # Make a StridedRows selection with range offset:step:len
-StridedRows(len::Int, step::Int, offset = 1) = StridedRows(len, offset:step:len)
+function StridedRows(len::Int; step::Int, offset::Int = 1)
+    @assert 1 <= offset <= step
+    StridedRows(len, offset:step:len)
+end
 
 columnlength(A::StridedRows) = A.len
 rowselection(A::StridedRows) = A.selection
+
+offset(A::StridedRows) = first(rowselection(A))
+Base.step(A::StridedRows) = step(rowselection(A))
 
 
 "Selecting a unit range of elements."
 struct ContiguousRows <: RestrictionArray
     len         ::  Int
     selection   ::  UnitRange{Int}
+
+    function ContiguousRows(len::Int, selection)
+        @assert 1 <= first(selection)
+        @assert last(selection) <= len
+        new(len, selection)
+    end
 end
 
 columnlength(A::ContiguousRows) = A.len
 rowselection(A::ContiguousRows) = A.selection
+
+## Convenience constructors
+RestrictionArray(len::Int, selection::UnitRange) = ContiguousRows(len, selection)
+RestrictionArray(len::Int, selection::StepRange) = StridedRows(len, selection)

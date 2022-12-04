@@ -13,6 +13,8 @@ abstract type PeriodicTranslates{S,T} <: Translates{S,T} end
 isperiodic(Φ::PeriodicTranslates) = true
 period(Φ::PeriodicTranslates{S,T}) where {S,T} = one(S)
 
+support(Φ::PeriodicTranslates{S}) where {S} = UnitInterval{S}()
+
 translates_grid(Φ::PeriodicTranslates{S}) where {S} =
     UnitPeriodicEquispacedGrid{S}(length(Φ))
 

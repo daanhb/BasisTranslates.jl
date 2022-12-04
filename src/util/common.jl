@@ -1,6 +1,9 @@
+
+const RegularGrid{T} = StepRangeLen{T,Base.TwicePrecision{T},Base.TwicePrecision{T},Int}
+
 # This implementation is provided pending the resolution of #47717 in julia
 # see: https://github.com/JuliaLang/julia/issues/47717
-
+#
 # function LinearAlgebra.pinv(D::Diagonal{T}; atol::Real = 0.0, rtol::Real = (eps(real(float(oneunit(T))))*length(D.diag))*iszero(atol)) where T
 function diagonal_pinv(D::Diagonal{T}; atol::Real = 0.0, rtol::Real = (eps(real(float(oneunit(T))))*length(D.diag))*iszero(atol)) where T
     Di = similar(D.diag, typeof(inv(oneunit(T))))

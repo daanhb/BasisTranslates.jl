@@ -52,7 +52,7 @@ end
 
 "Evaluate the derivative of the periodization of the given kernel."
 function periodized_kernel_eval_derivative(φ, period, x, order)
-    k_left, k_right = nb_overlapping_kernels(φ, period, x, order)
+    k_left, k_right = nb_overlapping_kernels(φ, period, x)
     z = kernel_eval_derivative(φ, x, order)
     for k in 1:k_right
         z1 = kernel_eval_derivative(φ, x-k*period, order)
