@@ -12,7 +12,7 @@ PartialFractions(poles::Vector{T}) where {T} =
 
 poles(Φ::PartialFractions) = Φ.poles
 
-BasisTranslates.translates_grid(Φ::PartialFractions) = Φ.poles
+BasisTranslates.centers(Φ::PartialFractions) = Φ.poles
 
 BasisFunctions.support(Φ::PartialFractions) = Φ.support
 

@@ -6,8 +6,8 @@ import BasisTranslates:
     kernel,
     parent_kernel,
     kernel_support,
-    translates_grid,
-    translate_map
+    centers,
+    map_to_kernel
 
 """
 A dictionary of B-splines with equispaced nodes.
@@ -26,14 +26,14 @@ nodes(Φ::RegularBSplines) = Φ.nodes
 
 Base.step(Φ::RegularBSplines) = step(Φ.nodes)
 
-translates_grid(Φ::RegularBSplines) = nodes(Φ)
+centers(Φ::RegularBSplines) = nodes(Φ)
 
 kernel(Φ::RegularBSplines{T}) where {T} =
     CenteredBSpline{T}(Φ.degree)
 
-function translate_map(Φ::RegularBSplines, i)
+function map_to_kernel(Φ::RegularBSplines, i)
     h = step(Φ)
-    c = translate_center(Φ, i)
+    c = center(Φ, i)
     AffineMap(inv(h), -c/h)
 end
 
@@ -73,7 +73,7 @@ semicentered_shift(Φ::PeriodicBSplines{T}) where {T} =
 
 # the map from [0,1] to the kernel domain takes into account the
 # shift by i, the shift of the kernel, and a scaling by N
-translate_map(Φ::PeriodicBSplines, i) =
+map_to_kernel(Φ::PeriodicBSplines, i) =
     AffineMap(length(Φ), -(i-1) + semicentered_shift(Φ))
 
 # this version is slightly more accurate than the default

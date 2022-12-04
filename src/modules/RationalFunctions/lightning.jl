@@ -19,7 +19,7 @@ function lightning_samples(poles::AbstractVector{T}, osf::Int) where {T}
 end
 
 lightning_normalization(Φ::BasisTranslates.Translates) =
-    DiagonalOperator(Φ, -translates_grid(Φ))
+    DiagonalOperator(Φ, -centers(Φ))
 
 
 function poly_lightning_approx(f, n, ncheb_uni, ncheb_tap, osf, kernel, sigma_uni = sqrt(2)*pi, sigma_tap = 2*sqrt(2)*pi; C = 1)

@@ -13,8 +13,8 @@ import BasisFunctions:
 export PeriodicInterval
 
 # From the generic code
-export translates_grid,
-    translate_center,
+export centers,
+    center,
     kernel,
     az_approximate,
     KernelTranslates,

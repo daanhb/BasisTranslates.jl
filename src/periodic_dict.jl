@@ -15,11 +15,11 @@ period(Φ::PeriodicTranslates{S,T}) where {S,T} = one(S)
 
 support(Φ::PeriodicTranslates{S}) where {S} = UnitInterval{S}()
 
-translates_grid(Φ::PeriodicTranslates{S}) where {S} =
+centers(Φ::PeriodicTranslates{S}) where {S} =
     UnitPeriodicEquispacedGrid{S}(length(Φ))
 
 hasinterpolationgrid(Φ::PeriodicTranslates) = true
-interpolation_grid(Φ::PeriodicTranslates) = translates_grid(Φ)
+interpolation_grid(Φ::PeriodicTranslates) = centers(Φ)
 
 oversampling_grid(Φ::PeriodicTranslates, s::Int) =
     resize(interpolation_grid(Φ), s*length(Φ))
@@ -33,17 +33,17 @@ the support of the translates is inversely proportional to `n`.
 """
 linearscaling(Φ::PeriodicTranslates) = true
 
-translate_map(Φ::PeriodicTranslates, i) =
+map_to_kernel(Φ::PeriodicTranslates, i) =
     linearscaling(Φ) ? AffineMap{prectype(Φ)}(Φ.n, -(i-1)) : Translation(-(i-one(prectype(Φ)))/length(Φ))
 
 function kerneldomain_period(Φ::PeriodicTranslates)
-    m = translate_map(Φ, 1)
+    m = map_to_kernel(Φ, 1)
     matrix(m) * period(Φ)
 end
 
 function support(Φ::PeriodicTranslates, i)
     if hascompactsupport(Φ)
-        minv = translate_map_inverse(Φ, i)
+        minv = map_from_kernel(Φ, i)
         a,b = extrema(kernel_support(Φ))
         PeriodicInterval(Interval(minv(a), minv(b)), support(Φ))
     else
@@ -53,7 +53,7 @@ end
 
 function support_approximate(Φ::PeriodicTranslates, i)
     if hascompactsupport_approximate(Φ)
-        minv = translate_map_inverse(Φ, i)
+        minv = map_from_kernel(Φ, i)
         a,b = extrema(kernel_support_approximate(Φ))
         PeriodicInterval(Interval(minv(a), minv(b)), support(Φ))
     else
@@ -85,7 +85,7 @@ function undo_periodic_wrapping(Φ::PeriodicTranslates, y)
 end
 
 function to_kernel_domain(Φ::PeriodicTranslates, idx, x)
-    m = translate_map(Φ, idx)
+    m = map_to_kernel(Φ, idx)
     y = undo_periodic_wrapping(Φ, m(x))
     y
 end

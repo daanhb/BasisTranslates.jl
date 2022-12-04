@@ -17,7 +17,7 @@ KernelTranslates{S,T}(kernel, centers, support) where {S,T} =
 
 kernel(Φ::KernelTranslates) = Φ.kernel
 
-translates_grid(Φ::KernelTranslates) = Φ.centers
+centers(Φ::KernelTranslates) = Φ.centers
 
 support(Φ::KernelTranslates) = Φ.support
 

@@ -11,7 +11,7 @@ shape_parameter(Φ::PeriodicRBFs) = Φ.epsilon
 
 BasisTranslates.linearscaling(Φ::PeriodicRBFs) = false
 
-function BasisTranslates.translate_map(Φ::PeriodicRBFs, idx)
+function BasisTranslates.map_to_kernel(Φ::PeriodicRBFs, idx)
     ε = shape_parameter(Φ)
     AffineMap(ε, -(idx-1)*ε/length(Φ))
 end
