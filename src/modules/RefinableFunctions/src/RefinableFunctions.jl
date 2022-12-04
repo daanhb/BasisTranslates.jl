@@ -22,7 +22,7 @@ import BasisFunctions:
 export RefinableFunction
 
 include("util/conv.jl")
-include("sequences.jl")
+include("util/sequences.jl")
 include("kernel.jl")
 include("dyadic.jl")
 include("dict.jl")
