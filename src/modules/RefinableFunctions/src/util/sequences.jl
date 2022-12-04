@@ -19,11 +19,16 @@ as a vector.
 struct VectorSequence{T} <: CompactSequence{T}
     coefficients    ::  Vector{T}
     I               ::  UnitRange{Int}
+
+    function VectorSequence{T}(coefficients, I) where {T}
+        @assert length(I) == length(coefficients)
+        new(coefficients, I)
+    end
 end
 
 # Make a causal sequence by default
-VectorSequence(coef::AbstractVector) =
-    VectorSequence(coef, 0:length(coef)-1)
+VectorSequence(coef::AbstractVector{T}, I = 0:length(coef)-1) where {T} =
+    VectorSequence{T}(coef, I)
 
 Base.getindex(s::VectorSequence, i::Int) =
     _getindex(s, i, s.coefficients, s.I)

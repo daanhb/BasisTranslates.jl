@@ -25,7 +25,6 @@ struct CompactCirculant{T} <: AbstractArray{T,2}
 
     function CompactCirculant{T}(seq::AbstractVector, n; offset = 1) where {T}
         @assert length(seq) <= n
-        @assert 1 <= offset <= n
         new(seq, n, offset)
     end
 end

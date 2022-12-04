@@ -26,5 +26,6 @@ include("util/sequences.jl")
 include("kernel.jl")
 include("dyadic.jl")
 include("dict.jl")
+include("filters.jl")
 
 end

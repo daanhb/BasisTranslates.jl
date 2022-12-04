@@ -21,10 +21,26 @@ end
 
 PeriodicRefinables(refinable::R, n::Int) where {T,R<:Refinable{T}} =
     PeriodicRefinables{T,R}(refinable, n)
+PeriodicRefinables(refinable::R, n::Int, fun) where {T,R<:Refinable{T}} =
+    PeriodicRefinables{T,R}(refinable, n, fun)
 
 Base.size(Φ::PeriodicRefinables) = (Φ.n,)
+
+Base.similar(Φ::PeriodicRefinables{S}, ::Type{S}, n::Int) where {S} =
+    PeriodicRefinables(Φ.refinable, n, Φ.fun)
 
 parent_kernel(Φ::PeriodicRefinables) = Φ.refinable
 
 kernel_eval(Φ::PeriodicRefinables, x) = _kernel_eval(Φ.fun, x)
 _kernel_eval(fun, x) = fun(x)
+
+function refine(f::Expansion{S,T,B}) where {S,T,B<:PeriodicRefinables}
+    n = length(f)
+    basis2 = similar(dictionary(f), 2n)
+    coef = coefficients(parent_kernel(basis2))
+    I = support(coef)
+    A = CompactCirculant(vector(coef), 2n; offset = first(I)+1)
+    R = BasisTranslates.RestrictionArray(2n, 1:2:2n)
+    C = R*A
+    Expansion(basis2, C'*coefficients(f)*sqrt(S(2)))
+end
