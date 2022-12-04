@@ -20,22 +20,15 @@ end
 "A refinable function with compact support given by its coefficients."
 struct GenericRefinable{T} <: CompactRefinable{T}
     coefficients    ::  VectorSequence{T}
+    fun
+
+    GenericRefinable{T}(coefficients) where {T} = new(coefficients)
 end
 
 GenericRefinable(coef::AbstractVector) =
     GenericRefinable(VectorSequence(coef))
 
 coefficients(φ::GenericRefinable) = φ.coefficients
-
-
-"The scaling function of the Haar wavelet is the block function on `[0,1]`."
-struct HaarScalingFunction{T} <: CompactRefinable{T}
-end
-
-HaarScalingFunction() = HaarScalingFunction{Float64}()
-
-coefficients(φ::HaarScalingFunction{T}) where {T} =
-    VectorSequence(1/sqrt(T(2))*[1,1])
 
 
 ## Convenience constructors

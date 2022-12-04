@@ -63,6 +63,8 @@ struct StridedRows <: RestrictionArray
     end
 end
 
+const StridedColumns = Adjoint{Bool,StridedRows}
+
 # Make a StridedRows selection with range offset:step:len
 function StridedRows(len::Int; step::Int, offset::Int = 1)
     @assert 1 <= offset <= step
@@ -74,6 +76,9 @@ rowselection(A::StridedRows) = A.selection
 
 offset(A::StridedRows) = first(rowselection(A))
 Base.step(A::StridedRows) = step(rowselection(A))
+
+offset(A::StridedColumns) = first(rowselection(parent(A)))
+Base.step(A::StridedColumns) = step(rowselection(parent(A)))
 
 
 "Selecting a unit range of elements."
@@ -87,6 +92,8 @@ struct ContiguousRows <: RestrictionArray
         new(len, selection)
     end
 end
+
+const ContiguousColumns = Adjoint{Bool,ContiguousRows}
 
 columnlength(A::ContiguousRows) = A.len
 rowselection(A::ContiguousRows) = A.selection

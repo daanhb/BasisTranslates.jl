@@ -40,35 +40,92 @@ function Base.getindex(A::CompactCirculant{T}, i::Int, j::Int) where {T}
     1 <= idx <= length(A.seq) ? A.seq[idx] : zero(T)
 end
 
+function Base.adjoint(A::CompactCirculant)
+    seq = conj(reverse(A.seq))
+    n = size(A,1)
+    CompactCirculant(seq, n, offset = -length(seq)-A.offset+3)
+end
+
 # TODO: efficient multiplication
 
 """
-A rectangular compact circulant matrix is a subset of a compact
-circulant matrix.
+A fat rectangular compact circulant matrix is a subset of a compact
+circulant matrix that selects a subset of rows.
 """
-struct RectangularCirculant{T} <: AbstractArray{T,2}
-    A       ::  CompactCirculant{T}
+struct FatRectangularCirculant{T} <: AbstractArray{T,2}
+    C       ::  CompactCirculant{T}
     step    ::  Int
     offset  ::  Int
 
-    function RectangularCirculant{T}(A::CompactCirculant, step::Int; offset::Int = 1) where {T}
+    function FatRectangularCirculant{T}(C::CompactCirculant; step::Int, offset::Int = 1) where {T}
         @assert 1 <= offset <= step
-        new(A, step, offset)
+        new(C, step, offset)
     end
 end
 
-RectangularCirculant(A::CompactCirculant{T}, step::Int; offset::Int=1) where {T} =
-    RectangularCirculant{T}(A, step; offset)
+FatRectangularCirculant(C::CompactCirculant{T}; step::Int, offset::Int=1) where {T} =
+    FatRectangularCirculant{T}(C; step, offset)
 
-function Base.size(A::RectangularCirculant)
-    m,n = size(A.A)
+function Base.size(A::FatRectangularCirculant)
+    m,n = size(A.C)
     div(m, A.step), n
 end
 
-Base.getindex(A::RectangularCirculant, i::Int, j::Int) =
-    A.A[(i-1)*A.step+A.offset,j]
+Base.getindex(A::FatRectangularCirculant, i::Int, j::Int) =
+    A.C[(i-1)*A.step+A.offset,j]
 
-Base.:*(R::BasisTranslates.StridedRows, A::CompactCirculant) =
-    RectangularCirculant(A, step(R); offset=BasisTranslates.offset(R))
+function LinearAlgebra.factorize(A::FatRectangularCirculant)
+    C = A.C
+    R = StridedRows(size(A,2), step=A.step, offset=A.offset)
+    R, C
+end
+
+Base.:*(R::BasisTranslates.StridedRows, C::CompactCirculant) =
+    FatRectangularCirculant(C; step=step(R), offset=BasisTranslates.offset(R))
+
+
+"""
+A tall rectangular compact circulant matrix is a subset of a compact
+circulant matrix that selects a subset of columns.
+"""
+struct TallRectangularCirculant{T} <: AbstractArray{T,2}
+    C       ::  CompactCirculant{T}
+    step    ::  Int
+    offset  ::  Int
+
+    function TallRectangularCirculant{T}(C::CompactCirculant; step::Int, offset::Int = 1) where {T}
+        @assert 1 <= offset <= step
+        new(C, step, offset)
+    end
+end
+
+TallRectangularCirculant(C::CompactCirculant{T}; step::Int, offset::Int=1) where {T} =
+    TallRectangularCirculant{T}(C; step, offset)
+
+function Base.size(A::TallRectangularCirculant)
+    m,n = size(A.C)
+    m, div(n, A.step)
+end
+
+Base.getindex(A::TallRectangularCirculant, i::Int, j::Int) =
+    A.C[i,(j-1)*A.step+A.offset]
+
+Base.:*(C::CompactCirculant, R::StridedColumns) =
+    TallRectangularCirculant(C; step=step(R), offset=BasisTranslates.offset(R))
+
+function LinearAlgebra.factorize(A::TallRectangularCirculant)
+    C = A.C
+    R = StridedRows(size(A,1), step=A.step, offset=A.offset)
+    C, R'
+end
+
+function Base.adjoint(A::FatRectangularCirculant)
+    R, C = factorize(A)
+    C'*R'
+end
+function Base.adjoint(A::TallRectangularCirculant)
+    C, E = factorize(A)
+    E'*C'
+end
 
 # TODO: efficient multiplication

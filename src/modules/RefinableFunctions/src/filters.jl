@@ -1,10 +1,4 @@
 
-function haar(::Type{T} = Float64) where {T}
-    sq2 = sqrt(T(2))
-    coef = 1/sq2 * [one(T), one(T)]
-    Refinable(coef)
-end
-
 function db2(::Type{T} = Float64) where {T}
     sq2 = sqrt(T(2))
     sq3 = sqrt(T(3))
