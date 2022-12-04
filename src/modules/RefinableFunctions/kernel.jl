@@ -12,6 +12,11 @@ abstract type Refinable{T} <: BasisTranslates.Kernel end
 "Supertype of refinable functions with compact support."
 abstract type CompactRefinable{T} <: Refinable{T} end
 
+function kernel_support(φ::CompactRefinable{T}) where {T}
+    I = support(coefficients(φ))
+    T(first(I))..T(last(I))
+end
+
 "A refinable function with compact support given by its coefficients."
 struct GenericRefinable{T} <: CompactRefinable{T}
     coefficients    ::  VectorSequence{T}
