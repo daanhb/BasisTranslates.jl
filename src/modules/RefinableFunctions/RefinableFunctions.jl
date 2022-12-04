@@ -14,9 +14,14 @@ import BasisTranslates:
     kernel_support,
     kernel_support_approximate
 
+import BasisFunctions:
+    coefficients
+
 export RefinableFunction
 
+include("util/conv.jl")
 include("sequences.jl")
+include("cache.jl")
 include("kernel.jl")
 include("dyadic.jl")
 include("dict.jl")

@@ -14,6 +14,7 @@ function values_at_integers(s::CompactSequence)
         end
     end
     e, v = eigen(A)
+    # There should be an eigenvalue close to 1
     @assert any(abs.(e .- 1) .< 1e-10)
     I = findfirst(abs.(e .- 1) .< 1e-10)
     vals = v[:,I]
@@ -52,14 +53,13 @@ function refine_dyadic_values(s::CompactSequence, vals::Vector)
 end
 
 "Evaluate a refinable function at dyadic numbers up to the given level."
-function eval_dyadic(s::CompactRefinable, level::Int)
-    coef = coefficients(s)
-    vals = values_at_integers(coef)
+function eval_dyadic(s::CompactSequence, level::Int)
+    vals = values_at_integers(s)
     for k in 1:level
-        vals = refine_dyadic_values(coef, vals)
+        vals = refine_dyadic_values(s, vals)
     end
-    I = support(coef)
-    T = eltype(coef)
+    I = support(s)
+    T = eltype(s)
     t = first(I):T(2)^(-level):last(I)
     t, vals
 end
