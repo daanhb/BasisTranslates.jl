@@ -51,7 +51,11 @@ primal_highpass(mra::MRA) = alternating_flip(dual_lowpass(mra))
 "Return the dual high-pass filter of the MRA."
 dual_highpass(mra::MRA) = alternating_flip(primal_lowpass(mra))
 
-scalingfunction(mra::MRA) = Refinable(primal_lowpass(mra))
+scalingfunction(mra::MRA) = primal_scalingfunction(mra)
+wavelet(mra::MRA) = primal_wavelet(mra)
+
+primal_scalingfunction(mra::MRA) = Refinable(primal_lowpass(mra))
+primal_wavelet(mra::MRA) = CompactWavelet(primal_scalingfunction(mra), primal_highpass(mra))
 
 function analysis_lowpass(mra::MRA, n::Int)
     lo_d = dual_lowpass(mra)

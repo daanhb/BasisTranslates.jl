@@ -3,15 +3,15 @@
 abstract type Refinables{T,EXT} <: BasisTranslates.Translates{T,T,EXT} end
 
 "A basis of translates of a (periodized) refinable function."
-struct PeriodicRefinables{T,R<:Refinable{T}} <: Refinables{T,:unitperiodic}
-    refinable   ::  R
+struct PeriodicRefinables{T} <: Refinables{T,:unitperiodic}
+    refinable   ::  Refinable{T}
     n           ::  Int
 end
 
 Base.size(Φ::PeriodicRefinables) = (Φ.n,)
 
-Base.similar(Φ::PeriodicRefinables{S}, ::Type{S}, n::Int) where {S} =
-    PeriodicRefinables(Φ.refinable, n, Φ.fun)
+Base.similar(Φ::PeriodicRefinables{T}, ::Type{T}, n::Int) where {T} =
+    PeriodicRefinables(Φ.refinable, n)
 
 parent_kernel(Φ::PeriodicRefinables) = Φ.refinable
 

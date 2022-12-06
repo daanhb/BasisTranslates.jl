@@ -3,7 +3,7 @@ module RefinableFunctions
 using ..BasisTranslates
 using BasisTranslates.BSplines
 
-using BasisFunctions, DomainSets
+using BasisFunctions, DomainSets, CompositeTypes
 using LinearAlgebra, BlockArrays
 
 import BasisTranslates:
@@ -30,6 +30,7 @@ include("kernel.jl")
 include("dyadic.jl")
 include("dict.jl")
 include("mra.jl")
+include("wavelets.jl")
 include("filters.jl")
 include("scaling.jl")
 

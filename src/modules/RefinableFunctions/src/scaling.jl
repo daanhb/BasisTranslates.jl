@@ -30,3 +30,12 @@ function primal_lowpass(mra::DaubechiesMRA{T}) where {T}
         error("Higher order Daubechies scaling functions not yet implemented.")
     end
 end
+
+
+"The CDF family."
+struct CDFMRA{T} <: MRA{T}
+    p   ::  Int
+    q   ::  Int
+end
+
+isorthogonal(::CDFMRA) = false
