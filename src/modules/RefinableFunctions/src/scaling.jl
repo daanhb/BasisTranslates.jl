@@ -25,7 +25,7 @@ function primal_lowpass(mra::DaubechiesMRA{T}) where {T}
     if p == 1
         primal_lowpass(HaarMRA{T}())
     elseif p == 2
-        db2(T)
+        db2_filter(T)
     else
         error("Higher order Daubechies scaling functions not yet implemented.")
     end

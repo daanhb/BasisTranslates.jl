@@ -20,7 +20,8 @@ import BasisTranslates:
     isbiorthogonal
 
 export RefinableFunction,
-    PeriodicRefinables
+    PeriodicRefinables,
+    refinable_coeff
 
 include("util/common.jl")
 include("util/conv.jl")
@@ -33,5 +34,6 @@ include("mra.jl")
 include("wavelets.jl")
 include("filters.jl")
 include("scaling.jl")
+include("splines.jl")
 
 end

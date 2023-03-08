@@ -1,6 +1,6 @@
 
 # simple implementation of the AZ algorithm for fixed rank
-function az(A, Zstar, b; rank_estimate::Int = 20)
+function az(A, Zstar, b; rank_estimate::Int = 30)
     m, n = size(A)
     R = rand(eltype(b), n, rank_estimate)
     Col = zeros(eltype(b), m, rank_estimate)

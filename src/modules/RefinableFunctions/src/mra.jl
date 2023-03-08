@@ -13,7 +13,7 @@ _kernel_eval(ψ::CompactWavelet, x, φ, coef) =
     sum(coef[i]*kernel_eval(φ, 2x-i) for i in support(coef))
 
 function kernel_support(ψ::CompactWavelet)
-    I = support(coefficients(ψ.scalingfunction))
+    I = support(refinable_coeff(ψ.scalingfunction))
     i1, i2 = first(I), last(I)
     ((1-i2+i1)/2)..((1+i2-i1)/2)
 end
