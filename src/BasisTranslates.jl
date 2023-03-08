@@ -34,6 +34,7 @@ include("periodization.jl")
 include("dictionary.jl")
 include("periodic_dict.jl")
 include("generic_dict.jl")
+include("shifted.jl")
 
 include("az.jl")
 

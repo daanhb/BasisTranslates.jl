@@ -14,6 +14,7 @@ const SimpleTranslates{S,T} = Translates{S,T,:simple}
 
 isperiodic(Φ::Translates) = false
 isperiodic(Φ::PeriodicTranslates) = true
+isperiodic(Φ::UnitPeriodicTranslates) = true
 
 
 "Return the centers of the basis of translates."
