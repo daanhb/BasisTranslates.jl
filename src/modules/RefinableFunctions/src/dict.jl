@@ -20,6 +20,8 @@ Base.similar(Φ::PeriodicRefinables{T}, ::Type{T}, n::Int) where {T} =
 
 parent_kernel(Φ::PeriodicRefinables) = Φ.refinable
 
+refinable_coeff(Φ::PeriodicRefinables) = refinable_coeff(parent_kernel(Φ))
+
 function refine(f::Expansion{S,T,B}) where {S,T,B<:PeriodicRefinables}
     n = length(f)
     basis2 = similar(dictionary(f), 2n)
@@ -28,5 +30,5 @@ function refine(f::Expansion{S,T,B}) where {S,T,B<:PeriodicRefinables}
     A = CompactCirculant(datavector(coef), 2n; offset = first(I)+1)
     R = RestrictionArray(2n, 1:2:2n)
     C = R*A
-    Expansion(basis2, C'*refinable_coeff(f)*sqrt(S(2)))
+    Expansion(basis2, C'*coefficients(f)*sqrt(S(2)))
 end

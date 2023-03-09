@@ -31,6 +31,8 @@ GenericRefinable(coef::AbstractVector) =
     GenericRefinable(VectorSequence(coef))
 
 refinable_coeff(φ::GenericRefinable) = φ.coefficients
+refinable_coeff(φ::BasisTranslates.PeriodizedKernel) =
+    refinable_coeff(parent_kernel(φ))
 
 
 """
