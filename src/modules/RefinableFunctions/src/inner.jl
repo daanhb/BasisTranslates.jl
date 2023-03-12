@@ -24,10 +24,9 @@ function productintegral_moments(s::CompactSequence; squarednorm = 1)
     squarednorm/mom[0] * mom
 end
 
-# "Return the integrals `φ1(x)*φ2(x-k)` for all k."
-# function unscaled_productintegral_moments(s1::CompactSequence, s2::CompactSequence)
-#     A,I = transfer_matrix(s1, s2)
-#     vals = eigenvector_with_eigenvalue_1(A)
-#     # TODO: figure out where the range of the moments is
-#     VectorSequence(vals, first(I)+2-datalength(s1):last(I)-datalength(s1))
-# end
+function productintegral_moments(s1::CompactSequence, s2::CompactSequence; mixednorm = 1)
+    A = transfer_matrix(s1, s2)
+    vals = eigenvector_with_eigenvalue_1(A)
+    # TODO: figure out where the range of the moments is
+    VectorSequence(vals)
+end
