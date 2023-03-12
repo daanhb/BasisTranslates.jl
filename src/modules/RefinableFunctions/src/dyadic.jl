@@ -1,9 +1,20 @@
 
+"Return the eigenvector of the matrix `A` with eigenvalue `1`."
+function eigenvector_with_eigenvalue_1(A)
+    e, v = eigen(A)
+    # There should be an eigenvalue close to 1
+    @assert any(abs.(e .- 1) .< 1e-10)
+    I = findfirst(abs.(e .- 1) .< 1e-10)
+    v[:,I]
+end
+
 """
 Use an eigenvalue problem to find the exact values of the refinable function
 at integer points.
+
+The result is normalized by ensuring the sum of values equals the given moment.
 """
-function values_at_integers(s::CompactSequence)
+function values_at_integers(s::CompactSequence, moment = 1)
     I = support(s)
     i1 = first(I)
     L = length(I)
@@ -13,16 +24,8 @@ function values_at_integers(s::CompactSequence)
             A[k+1,l+1] = sqrt(2)*s[i1-l+2k]
         end
     end
-    e, v = eigen(A)
-    # There should be an eigenvalue close to 1
-    @assert any(abs.(e .- 1) .< 1e-10)
-    I = findfirst(abs.(e .- 1) .< 1e-10)
-    vals = v[:,I]
-    # make sure the function is mostly positive
-    if sum(vals) < sum(-vals)
-        vals = -vals
-    end
-    vals
+    vals = eigenvector_with_eigenvalue_1(A)
+    vals/sum(vals)*moment
 end
 
 """
@@ -53,8 +56,8 @@ function refine_dyadic_values(s::CompactSequence, vals::Vector)
 end
 
 "Evaluate a refinable function at dyadic numbers up to the given level."
-function eval_dyadic(s::CompactSequence, level::Int)
-    vals = values_at_integers(s)
+function eval_dyadic(s::CompactSequence, level::Int, moment = 1)
+    vals = values_at_integers(s, moment)
     for k in 1:level
         vals = refine_dyadic_values(s, vals)
     end

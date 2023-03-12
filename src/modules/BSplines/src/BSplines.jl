@@ -6,6 +6,9 @@ using BasisFunctions, DomainSets
 
 using SpecialFunctions
 
+import DomainSets:
+    numtype
+
 export eval_bspline,
     eval_bspline_derivative,
     eval_centered_bspline,

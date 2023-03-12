@@ -11,8 +11,25 @@ for some set of coefficients `h[k]`.
 abstract type Refinable{T} <: Kernel end
 # type parameter T is supposed to be the eltype of the coefficients
 
+numtype(::Type{<:Refinable{T}}) where T = T
+
 isrefinable(φ::Refinable) = true
 isrefinable(φ::Kernel) = false
+
+"Return the coefficients of the two-scale relation as a sequence."
+refinable_coeff(φ::BasisTranslates.PeriodizedKernel) =
+    refinable_coeff(parent_kernel(φ))
+
+"""
+A refinable function is only defined up to a normalization. The normalization
+can be fixed by the value of the integral of the function (its first moment).
+
+Since refinable functions form a partition of unity, the value of the moment
+also equals the sum of the values of the function at equispaced points with
+grid spacing 1.
+"""
+refinable_moment(φ::Refinable) = one(numtype(φ))
+
 
 "Supertype of refinable functions with compact support."
 abstract type CompactRefinable{T} <: Refinable{T} end
@@ -22,17 +39,22 @@ function kernel_support(φ::CompactRefinable{T}) where {T}
     T(first(I))..T(last(I))
 end
 
-"A refinable function with compact support given by its coefficients."
+"""
+A refinable function with compact support given by its coefficients.
+The function is normalized to have a given integral.
+"""
 struct GenericRefinable{T} <: CompactRefinable{T}
     coefficients    ::  VectorSequence{T}
+    moment          ::  T
 end
 
-GenericRefinable(coef::AbstractVector) =
-    GenericRefinable(VectorSequence(coef))
+GenericRefinable(coef::AbstractVector, args...) =
+    GenericRefinable(VectorSequence(coef), args...)
+GenericRefinable(coefficients::VectorSequence{T}, moment = one(T)) where T =
+    GenericRefinable{T}(coefficients, moment)
 
 refinable_coeff(φ::GenericRefinable) = φ.coefficients
-refinable_coeff(φ::BasisTranslates.PeriodizedKernel) =
-    refinable_coeff(parent_kernel(φ))
+refinable_moment(φ::GenericRefinable) = φ.moment
 
 
 """
@@ -44,7 +66,7 @@ struct EvaluatedRefinable{T} <: CompactRefinable{T}
     fun
     function EvaluatedRefinable{T}(φ::Kernel; levels = 6) where {T}
         @assert isrefinable(φ)
-        t, vals = eval_dyadic(refinable_coeff(φ), levels)
+        t, vals = eval_dyadic(refinable_coeff(φ), levels, refinable_moment(φ))
         fun = Expansion(RegularBSplines(t, degree=1), vals)
         new(φ, fun)
     end

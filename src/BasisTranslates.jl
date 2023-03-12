@@ -16,6 +16,9 @@ export PeriodicInterval
 export centers,
     center,
     kernel,
+    kernel_eval,
+    kernel_eval_derivative,
+    kernel_support,
     az_approximate,
     KernelTranslates,
     PeriodicKernelTranslates

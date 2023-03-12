@@ -6,6 +6,9 @@ using BasisTranslates.BSplines
 using BasisFunctions, DomainSets, CompositeTypes
 using LinearAlgebra, BlockArrays
 
+import DomainSets:
+    numtype
+
 import BasisTranslates:
     iscompact,
     support,
@@ -27,6 +30,7 @@ include("util/common.jl")
 include("util/conv.jl")
 include("util/sequences.jl")
 include("util/filterbank.jl")
+include("inner.jl")
 include("kernel.jl")
 include("dyadic.jl")
 include("dict.jl")

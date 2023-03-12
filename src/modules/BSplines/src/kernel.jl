@@ -9,17 +9,23 @@ import BasisTranslates:
 abstract type BSplineKernel{T} <: BasisTranslates.Kernel
 end
 
+numtype(::Type{<:BSplineKernel{T}}) where T = T
+
 "Kernel representing a B-spline of a certain degree."
 struct BSpline{T} <: BSplineKernel{T}
     degree  ::  Int
 end
 BSpline(degree::Int) = BSpline{Float64}(degree)
 
+spline_degree(φ::BSpline) = φ.degree
+
 "Kernel representing a centered B-spline of a certain degree."
 struct CenteredBSpline{T} <: BSplineKernel{T}
     degree  ::  Int
 end
 CenteredBSpline(degree::Int) = CenteredBSpline{Float64}(degree)
+
+spline_degree(φ::CenteredBSpline) = φ.degree
 
 function kernel_support(kern::BSpline{T}) where {T}
     a, b = support_bspline(kern.degree, T)

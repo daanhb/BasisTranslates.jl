@@ -1,29 +1,23 @@
 
 using BasisTranslates.BSplines: BSpline
 
-isrefinable(φ::BSpline) = true
-
 "Refinable coefficients of a bspline."
 bspline_refinable_coefficients(degree::Int, ::Type{T} = Float64) where {T} =
     [binomial(degree+1,k) for k in 0:degree+1] / 2^(degree+one(T)/2)
 
-"Filter associated with a bspline of the given degree."
-function bspline_filter(degree::Int, ::Type{T} = Float64) where {T}
+"Causal filter associated with a bspline of the given degree."
+function bspline_causal_filter(degree::Int, ::Type{T} = Float64) where {T}
     coef = bspline_refinable_coefficients(degree, T)
-    if isodd(length(coef))
-        # we make the basis functions symmetric
-        L = length(coef)>>1
-        I = -L:L
-    else
-        # we make the filter causal
-        I = 0:length(coef)-1
-    end
-    VectorSequence(coef, I)
+    VectorSequence(coef, 0:degree+1)
 end
 
-refinable_coeff(φ::BSpline{T}) where T = bspline_filter(φ.degree, T)
+isrefinable(φ::BSpline) = true
+refinable_coeff(φ::BSpline) = bspline_causal_filter(spline_degree(φ), numtype(φ))
+refinable_moment(φ::BSpline) = one(numtype(φ))
 
-struct CDFDual{T} <: BasisTranslates.Kernel
+
+
+struct CDFDual{T} <: Refinable{T}
     p               ::  Int
     q               ::  Int
     coefficients    ::  VectorSequence{T}
