@@ -1,7 +1,7 @@
 module BasisTranslates
 
 using AbstractFFTs, BlockArrays, LinearAlgebra, LinearMaps
-using BasisFunctions, DomainSets
+using BasisFunctions, DomainSets, DomainIntegrals
 
 LinearMap = LinearMaps.LinearMap
 

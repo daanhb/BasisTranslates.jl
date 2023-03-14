@@ -24,7 +24,13 @@ import BasisTranslates:
 
 export RefinableFunction,
     PeriodicRefinables,
-    refinable_coeff
+    isrefinable,
+    refinable_coeff,
+    refinable_quadrature,
+    cdfdual
+
+# from util/sequences.jl
+export datavector
 
 include("util/common.jl")
 include("util/conv.jl")

@@ -145,3 +145,7 @@ function DomainSets.intersectdomain(d::PeriodicInterval, a::AbstractInterval)
         intersect(component(d,1), a)
     end
 end
+
+# Teach DomainIntegrals how to evaluate on a PeriodicInterval
+DomainIntegrals.domain_splits(domain::PeriodicInterval) = true
+DomainIntegrals.domain_split(domain::PeriodicInterval) = components(domain)

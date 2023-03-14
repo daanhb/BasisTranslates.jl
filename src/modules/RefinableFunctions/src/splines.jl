@@ -88,7 +88,11 @@ function cdfdual_filter(p::Int, q::Int, ::Type{T} = Float64) where T
     end
     # make the coefficients of type T and ensure they sum to 2
     data = (z * sqrt(T(2))) / sum(z)
-    CompactSequence(data)
+    # determine the support of the dual sequence, based on the difference
+    # in length between the primal and dual sequences. The primal sequence has
+    # length p+2.
+    I1 = (length(z) - (p+2)) >> 1
+    CompactSequence(data, -I1-1:-I1+length(z)-2)
 end
 
 function cdfdual(p::Int, q::Int, ::Type{T} = Float64) where T
