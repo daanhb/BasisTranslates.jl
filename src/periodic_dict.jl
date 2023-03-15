@@ -20,8 +20,9 @@ centers(Φ::PeriodicTranslates) =
 hasinterpolationgrid(Φ::AllPeriodicTranslates) = true
 interpolation_grid(Φ::AllPeriodicTranslates) = centers(Φ)
 
-oversampling_grid(Φ::AllPeriodicTranslates, s::Int) =
-    resize(interpolation_grid(Φ), s*length(Φ))
+"Make a grid with a specified factor of oversampling."
+oversampled_grid(Φ::AllPeriodicTranslates; osf::Int) =
+    resize(interpolation_grid(Φ), osf*length(Φ))
 
 """
 Without linear scaling the kernel function `φ` is translated to all the centers,
@@ -132,7 +133,7 @@ centers on `[0,1]` and with a factor `osf` of oversampling.
 """
 function az_approximate(basis::UnitPeriodicTranslates, f, t1, t2, osf)
     n = length(basis)
-    tt = oversampling_grid(basis, osf)
+    tt = oversampled_grid(basis; osf)
 
     # Compute the restriction R from the large grid to the subgrid
     I1 = findfirst(tt .>= t1)

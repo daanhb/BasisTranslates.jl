@@ -20,7 +20,8 @@ export eval_bspline,
     RegularBSplines,
     PeriodicBSplines,
     spline_order,
-    spline_degree
+    spline_degree,
+    BSpline
 
 include("bspline_defs.jl")
 include("integral.jl")

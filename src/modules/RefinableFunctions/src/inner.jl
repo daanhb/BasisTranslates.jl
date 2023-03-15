@@ -44,7 +44,7 @@ function discrete_dual(kern, ofs, Q)
     s1 = leftendpoint(S)
     s2 = rightendpoint(S)
     L = Int(s2-s1)
-    A = [kernel_eval(kern, k/ofs-l) for l in -1:2L+1, k in 0:Q]
+    A = [kernel_eval(kern, k/ofs-l) for l in -1:2L+1, k in 0:Q-1]
     B = zeros(size(A,1))
     B[L+2] = 1
     A\B

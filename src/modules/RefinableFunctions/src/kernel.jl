@@ -53,9 +53,13 @@ GenericRefinable(coef::AbstractVector, args...) =
 GenericRefinable(coefficients::VectorSequence{T}, moment = one(T)) where T =
     GenericRefinable{T}(coefficients, moment)
 
+"Return the coefficients of the refinement equation of the given refinable function."
 refinable_coeff(φ::GenericRefinable) = φ.coefficients
+"Return the first moment of the refinable function."
 refinable_moment(φ::GenericRefinable) = φ.moment
 
+"Alias for `refinable_coeff`."
+refinable_coefficients(φ) = refinable_coeff(φ)
 
 """
 A generic refinable function whose evaluation is computed in a fine

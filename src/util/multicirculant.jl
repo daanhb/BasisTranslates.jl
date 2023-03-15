@@ -45,7 +45,7 @@ The multi-row ciculant matrix `A` corresponds to a column-block circulant
 matrix `B = Π*A` and `A = Π'*B`.
 The matrix `B` is block-diagonalized using block Fourier, `P'*B*F = D`.
 
-The complete factorization satisfies `A = Π'*P*D*F`.
+The complete factorization satisfies `A = Π'*P*D*F'`.
 """
 struct MultiRowCirculantFactorization{T} <: LinearAlgebra.Factorization{T}
     A       ::  MultiRowCirculant{T}
