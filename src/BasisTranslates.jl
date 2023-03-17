@@ -1,6 +1,7 @@
 module BasisTranslates
 
-using AbstractFFTs, BlockArrays, LinearAlgebra
+using AbstractFFTs, FFTW
+using BlockArrays, LinearAlgebra
 using BasisFunctions, DomainSets, DomainIntegrals
 
 import BasisFunctions:
