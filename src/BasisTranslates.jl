@@ -1,9 +1,7 @@
 module BasisTranslates
 
-using AbstractFFTs, BlockArrays, LinearAlgebra, LinearMaps
+using AbstractFFTs, BlockArrays, LinearAlgebra
 using BasisFunctions, DomainSets, DomainIntegrals
-
-LinearMap = LinearMaps.LinearMap
 
 import BasisFunctions:
     isperiodic, period,

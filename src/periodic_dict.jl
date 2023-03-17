@@ -138,7 +138,7 @@ function az_approximate(basis::UnitPeriodicTranslates, f, t1, t2, osf)
     # Compute the restriction R from the large grid to the subgrid
     I1 = findfirst(tt .>= t1)
     I2 = findlast(tt .<= t2)
-    R = ContiguousRows(length(tt), I1:I2)
+    R = RestrictionArray(length(tt), I1:I2)
     tt_int = R*tt
 
     # Compute the factorization of A using its block-circulant structure
@@ -146,12 +146,11 @@ function az_approximate(basis::UnitPeriodicTranslates, f, t1, t2, osf)
     F = factorize(Acirc)
 
     # This leads to an (A,Z) pair on [0,1]
-    AZ_A = R*(F.Π'*(F.P*(F.D*LinearMap(F.F'))))
-    AZ_Zstar = F.F*(F.Dpinv*(F.P'*(F.Π*LinearMap(R'))))
+    AZ_A = ArrayOperator(R)*ArrayOperator(F.Π')*ArrayOperator(F.P)*ArrayOperator(F.D)*ArrayOperator(F.F')
+    AZ_Zstar = ArrayOperator(F.F)*ArrayOperator(F.Dpinv)*ArrayOperator(F.P')*ArrayOperator(F.Π)*ArrayOperator(R')
 
     b = f.(tt_int)
     c = az(AZ_A, AZ_Zstar, b)
     F = Expansion(basis, c)
-
     F
 end

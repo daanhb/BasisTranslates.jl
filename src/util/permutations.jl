@@ -47,6 +47,9 @@ function LinearAlgebra.mul!(y::AbstractVector, E::ExtensionArray, x::AbstractVec
     y
 end
 
+Base.:*(R::RestrictionArray, x::GridArrays.AbstractEquispacedGrid) = R * range(x)
+Base.:*(R::RestrictionArray, x::AbstractRange) = x[rowselection(R)]
+
 LinearAlgebra.pinv(A::RestrictionArray) = adjoint(A)
 LinearAlgebra.pinv(A::ExtensionArray) = adjoint(A)
 
@@ -97,6 +100,7 @@ const ContiguousColumns = Adjoint{Bool,ContiguousRows}
 
 columnlength(A::ContiguousRows) = A.len
 rowselection(A::ContiguousRows) = A.selection
+
 
 ## Convenience constructors
 RestrictionArray(len::Int, selection::UnitRange) = ContiguousRows(len, selection)
