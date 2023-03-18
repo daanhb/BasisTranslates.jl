@@ -1,7 +1,7 @@
 name = "BasisTranslates"
 uuid = "6f49839c-b887-42fe-a304-07c35be75e0b"
 authors = ["Daan Huybrechs <daan.huybrechs@kuleuven.be>"]
-version = "0.1.2"
+version = "0.1.3"
 
 [deps]
 AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"

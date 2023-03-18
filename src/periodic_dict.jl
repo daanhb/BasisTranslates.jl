@@ -127,6 +127,22 @@ function evaluation(::Type{T}, Φ::UnitPeriodicTranslates, gb::GridBasis, grid::
     end
 end
 
+function periodic_solver(basis::UnitPeriodicTranslates, osf; options...)
+    t = oversampled_grid(basis; osf)
+    Acirc = matrix(evaluation(basis, t))
+    F = factorize(Acirc)
+    A = ArrayOperator(F.Π')*ArrayOperator(F.P)*ArrayOperator(F.D)*ArrayOperator(F.F')
+    Zstar = ArrayOperator(F.F)*ArrayOperator(F.Dpinv)*ArrayOperator(F.P')*ArrayOperator(F.Π)
+    t, A, Zstar
+end
+
+function periodic_solve(basis::UnitPeriodicTranslates, f, osf; options...)
+    t, A, Zstar = periodic_solver(basis, osf; options...)
+    b = f.(t)
+    c = Zstar*b
+    Expansion(basis, c)
+end
+
 """
 Approximate the given function `f` on the interval `[t1,t2] ⊂ [0,1]` using `n`
 centers on `[0,1]` and with a factor `osf` of oversampling.
