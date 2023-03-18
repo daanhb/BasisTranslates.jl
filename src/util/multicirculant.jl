@@ -22,19 +22,27 @@ end
 
 Base.copy(A::MultiRowCirculant) = MultiRowCirculant([copy(a) for a in A.arrays])
 
-"Convert the given matrix into a block circulant matrix."
+"Convert the given matrix into a block-column circulant matrix."
 function blockcirculant(A::MultiRowCirculant)
     s = nblocks(A)
     mortar(reshape(A.arrays, s, 1))
 end
 
-"Convert the given matrix into a block circulant matrix."
+"Permutation to convert the given matrix into a block-column circulant matrix."
 function rowpermutation(A::MultiRowCirculant)
     s, n = nblocks(A), blockdim(A)
     ops = [StridedRows(s*n; step = s, offset = i) for i in 1:s]
     mortar(reshape(ops, s, 1))
 end
 
+function LinearAlgebra.mul!(y::AbstractVector, A::MultiRowCirculant, x::AbstractVector)
+    s, n = nblocks(A), blockdim(A)
+    for i in 1:s
+        yk = A.arrays[i]*x
+        y[i:s:end] = yk
+    end
+    y
+end
 
 const RowPermutationArray = BlockMatrix{Bool, Matrix{StridedRows}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
 

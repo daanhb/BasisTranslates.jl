@@ -141,15 +141,15 @@ const BlockFourierMatrixAdj{T,A} = Adjoint{Complex{T},BlockFourierMatrix{T,A}}
 
 Base.axes(A::BlockFourierMatrix) = (A.axes1, A.axes1)
 
-function Base.getindex(A::BlockFourierMatrix{T}, i::Int, j::Int) where {T}
+function Base.getindex(A::BlockFourierMatrix, i::Int, j::Int)
     @boundscheck checkbounds(A, i, j)
     I1,I2 = findblockindex.(axes(A), (i,j))
     if I1.I == I2.I
         k = I1.α[1]
         l = I2.α[1]
-        normalized_dft_getindex(A.n, T, k, l)
+        A.block[k,l]
     else
-        zero(Complex{T})
+        zero(eltype(A))
     end
 end
 
@@ -190,7 +190,7 @@ function LinearAlgebra.mul!(y::AbstractBlockVector, F::BlockFourierMatrix, x::Ab
     @assert axes(x)[1] == axes(y)[1] == axes(F)[2]
     s, n = F.s, F.n
     for k in 1:s
-        normalized_dft!(n, viewblock(y, Block(k)), viewblock(x, Block(k)), F.block.plan!)
+        mul!(viewblock(y, Block(k)), F.block, viewblock(x, Block(k)))
     end
     y
 end
@@ -237,7 +237,7 @@ function LinearAlgebra.mul!(y::AbstractBlockVector, A::BlockFourierMatrixAdj, x:
     @assert axes(x)[1] == axes(y)[1] == axes(F)[2]
     s, n = F.s, F.n
     for k in 1:s
-        normalized_idft!(n, viewblock(y, Block(k)), viewblock(x, Block(k)), parent(A).block.iplan!)
+        mul!(viewblock(y, Block(k)), parent(A).block', viewblock(x, Block(k)))
     end
     y
 end

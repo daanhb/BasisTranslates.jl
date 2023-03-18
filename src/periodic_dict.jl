@@ -131,7 +131,9 @@ end
 Approximate the given function `f` on the interval `[t1,t2] ⊂ [0,1]` using `n`
 centers on `[0,1]` and with a factor `osf` of oversampling.
 """
-function az_approximate(basis::UnitPeriodicTranslates, f, t1, t2, osf)
+function az_approximate(basis::UnitPeriodicTranslates, f, t1, t2, osf;
+        options...)
+
     n = length(basis)
     tt = oversampled_grid(basis; osf)
 
@@ -150,7 +152,6 @@ function az_approximate(basis::UnitPeriodicTranslates, f, t1, t2, osf)
     AZ_Zstar = ArrayOperator(F.F)*ArrayOperator(F.Dpinv)*ArrayOperator(F.P')*ArrayOperator(F.Π)*ArrayOperator(R')
 
     b = f.(tt_int)
-    c = az(AZ_A, AZ_Zstar, b)
-    F = Expansion(basis, c)
-    F
+    c = az(AZ_A, AZ_Zstar, b; rank_estimate=30, options...)
+    Expansion(basis, c)
 end
