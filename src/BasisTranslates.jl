@@ -3,6 +3,7 @@ module BasisTranslates
 using AbstractFFTs, FFTW
 using BlockArrays, LinearAlgebra
 using BasisFunctions, DomainSets, DomainIntegrals
+using AZalgorithm
 
 import BasisFunctions:
     isperiodic, period,
@@ -37,8 +38,6 @@ include("dictionary.jl")
 include("periodic_dict.jl")
 include("generic_dict.jl")
 include("shifted.jl")
-
-include("az.jl")
 
 # submodules
 include("modules/BSplines/src/BSplines.jl")
