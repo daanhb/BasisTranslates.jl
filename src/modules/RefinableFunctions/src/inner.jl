@@ -51,17 +51,27 @@ function discrete_dual(kern, ofs, Q)
 end
 
 """
-Compute the Sweldens quadrature rule for integrals involving a refinable function.
+Compute the Sweldens quadrature rule for integrals involving a
+refinable function.
 
 The method is described in:
 W. Sweldens and R. Piessens, "Quadrature formulae and asymptotic error expansions
 for wavelet approximations of smooth functions", SIAM J. Numer. Anal. 31(4),
 pp. 1240-1264, 1994.
 
-We return a quadrature rule with points spaced 1/M apart, symmetric with
-respect to the origin, and including the origin itself.
+We return a quadrature rule with a fixed number `osf` of points per unit length.
+This value is like an oversampling factor, hence its name.
 """
-function refinable_quadrature(coefficients, M = length(coefficients)-1)
+function refinable_quadrature(kernel::Kernel, osf = 1)
+    coefficients = datavector(refinable_coeff(kernel))
+    x, w = refinable_quadrature(coefficients, osf*length(coefficients)-1)
+    w = w / sum(w) * refinable_moment(kernel)
+    a,b = extrema(kernel_support(kernel))
+    x = a .+ x * (b-a) / (length(coefficients)-1)
+    x, w
+end
+
+function refinable_quadrature(coefficients::AbstractVector, M = length(coefficients)-1)
     @assert sum(coefficients) ≈ sqrt(2)
     L = length(coefficients)
     # Perform calculations in BigFloat for greater accuracy
@@ -75,9 +85,16 @@ function refinable_quadrature(coefficients, M = length(coefficients)-1)
     m = chebyshev_moments(BigFloat.(coefficients), length(t)-1)
     w = A\m
     T = eltype(coefficients)
-    map(T, (L-1) * t/2), map(T, w)[:]
+    map(T, (L-1) * (t .+ 1)/2), map(T, w)[:]
 end
 
+"Scale the given quadrature rule from `[a,b]` to `[c,d]`."
+function scale_quadrature(x, w, a, b, c, d)
+    L = b-a
+    x2 = c .+ (x .- a)/L*(d-c)
+    w2 = w * (d-c)/L
+    x2, w2
+end
 
 function chebyshev_vandermonde_matrix(t::AbstractVector{T}) where {T}
     M = length(t)-1

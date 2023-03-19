@@ -1,6 +1,4 @@
 
-using BasisTranslates: Kernel
-
 """
 Supertype of refinable functions.
 

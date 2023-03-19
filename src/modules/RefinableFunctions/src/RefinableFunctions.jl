@@ -22,6 +22,8 @@ import BasisTranslates:
     isorthogonal,
     isbiorthogonal
 
+using BasisTranslates: Kernel
+
 export RefinableFunction,
     PeriodicRefinables,
     isrefinable,
