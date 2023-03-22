@@ -9,8 +9,8 @@ struct CompactWavelet{T} <: DiscreteWavelet{T}
 end
 
 kernel_eval(ψ::CompactWavelet, x) = _kernel_eval(ψ, x, ψ.scalingfunction, ψ.coefficients)
-_kernel_eval(ψ::CompactWavelet, x, φ, coef) =
-    sum(coef[i]*kernel_eval(φ, 2x-i) for i in support(coef))
+_kernel_eval(ψ::CompactWavelet{T}, x, φ, coef) where T =
+    sqrt(T(2))*sum(coef[i]*kernel_eval(φ, 2x-i) for i in support(coef))
 
 function kernel_support(ψ::CompactWavelet)
     I = support(refinable_coeff(ψ.scalingfunction))

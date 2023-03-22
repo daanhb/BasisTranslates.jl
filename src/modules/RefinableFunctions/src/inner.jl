@@ -52,6 +52,41 @@ function discrete_dual(kern, ofs, Q)
 end
 
 """
+Compute an oversampled quadrature rule associated with a primal and
+dual function with a difference in levels.
+"""
+function oversampled_quadrature(kernel, dualkernel, level)
+    osf = 2^level
+    # first compute the quadrature points
+    htilde = refinable_coeff(dualkernel)
+    Idual = support(htilde)
+    t1 = first(Idual)
+    t2 = last(Idual)
+    t = range(t1, stop=t2, step = 1/osf)
+    m = length(t)
+    # compute the basis functions that overlap with these points on the given level
+    I = support(refinable_coeff(kernel))
+    Q = 10
+    skernel = BasisTranslates.ScaledKernel(kernel, 2.0^level)
+    Phi = BasisTranslates.KernelTranslates(skernel, -Q:2.0^(-level):Q, -Q..Q)
+    A = [2^(level/2)*Phi[k](t[i]) for k in eachindex(Phi), i in eachindex(t)]
+    A_I = -Q*2^level:Q*2^level
+    c = DiracSequence()
+    for i in 1:level
+        c = sum(htilde[i]*shift(c,i) for i in support(htilde))
+    end
+    B = [c[k] for k in A_I]
+    sumA = sum(A; dims=2)[:]
+    I1 = findfirst(sumA .> 0)
+    I2 = findlast(sumA .> 0)
+    A = A[I1:I2,:]
+    B = B[I1:I2]
+    w = A\B
+    t, w
+end
+
+
+"""
 Compute a quadrature rule for integrals involving a refinable function.
 
 The method is described in:
