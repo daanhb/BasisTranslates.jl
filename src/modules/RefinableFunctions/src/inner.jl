@@ -1,6 +1,7 @@
 
 "A matrix with the convolution of two sequences on its rows, shifted by two on consecutive rows."
 function transfer_matrix(s1::CompactSequence, s2::CompactSequence)
+    # TODO: I am not sure this routine is correct
     s = convolve(s1, s2)
     i1 = first(support(s))
     i2 = last(support(s))
@@ -51,8 +52,7 @@ function discrete_dual(kern, ofs, Q)
 end
 
 """
-Compute the Sweldens quadrature rule for integrals involving a
-refinable function.
+Compute a quadrature rule for integrals involving a refinable function.
 
 The method is described in:
 W. Sweldens and R. Piessens, "Quadrature formulae and asymptotic error expansions

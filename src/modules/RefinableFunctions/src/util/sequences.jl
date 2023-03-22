@@ -3,6 +3,8 @@
 abstract type Sequence{T} end
 
 Base.eltype(::Type{<:Sequence{T}}) where {T} = T
+Base.getindex(s::Sequence, I::AbstractRange) = [s[i] for i in I]
+Base.getindex(s::Sequence, I::Colon) = s
 
 "Supertype of compact sequences, with a finite number of non-zero entries."
 abstract type CompactSequence{T} <: Sequence{T} end
@@ -15,9 +17,19 @@ Base.sum(s::CompactSequence) = sum(s[i] for i in support(s))
 datavector(s::CompactSequence) = [s[i] for i in support(s)]
 datalength(s::CompactSequence) = length(support(s))
 
-Base.:*(a::Number, s::CompactSequence) = CompactSequence(a*datavector(s), support(s))
+## Arithmetic with sequences
+
+Base.:*(a::Number, s::CompactSequence) =
+    CompactSequence(a*datavector(s), support(s))
 Base.:*(s::CompactSequence, a::Number) = a*s
 Base.:/(s::CompactSequence, a::Number) = (1/a)*s
+
+function Base.:+(s1::CompactSequence, s2::CompactSequence)
+    I1 = support(s1)
+    I2 = support(s2)
+    I = min(first(I1),first(I2)):max(last(I1),last(I2))
+    CompactSequence([s1[i]+s2[i] for i in I], I)
+end
 
 
 """
@@ -45,8 +57,6 @@ Base.getindex(s::VectorSequence, i::Int) =
     _getindex(s, i, s.coefficients, s.I)
 _getindex(s::VectorSequence{T}, i::Int, coef, I) where {T} =
     i ∈ I ? s.coefficients[i-first(I)+1] : zero(T)
-
-Base.getindex(s::VectorSequence, I::UnitRange) = [s[i] for i in I]
 
 support(s::VectorSequence) = s.I
 
@@ -107,3 +117,21 @@ function convolve(s1::CompactSequence, s2::CompactSequence)
     j1 = first(support(s2))
     VectorSequence(d, i1+j1:i1+j1+length(d)-1)
 end
+
+"Shift a sequence in time."
+shift(s::CompactSequence, i::Int) = CompactSequence(datavector(s), support(s) .+ i)
+
+
+"The Dirac sequence is zero everywhere except at time `k`, where it is `1`."
+struct DiracSequence{T} <: CompactSequence{T}
+    k   ::  Int
+end
+
+DiracSequence(k::Int = 0) = DiracSequence{Float64}(k)
+
+iscompact(s::DiracSequence) = true
+Base.getindex(s::DiracSequence{T}, i::Int) where T =
+    i == s.k ? one(T) : zero(T)
+support(s::DiracSequence) = s.k:s.k
+
+shift(s::DiracSequence{T}, i::Int) where T = DiracSequence{T}(s.k+i)
