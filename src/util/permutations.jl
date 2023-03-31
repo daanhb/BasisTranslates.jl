@@ -1,9 +1,9 @@
 
 "Supertype of rectangular arrays that select a subset of a vector."
-abstract type RestrictionArray <: AbstractArray{Bool,2} end
+abstract type RestrictionArray{T} <: AbstractArray{T,2} end
 
 # The adjoint of a restriction is an extension by zero padding
-const ExtensionArray = Adjoint{Bool,<:RestrictionArray}
+const ExtensionArray{T} = Adjoint{T,<:RestrictionArray{T}}
 
 Base.size(A::RestrictionArray) = (length(rowselection(A)), columnlength(A))
 
@@ -13,9 +13,9 @@ lastrow(A::RestrictionArray) = last(rowselection(A))
 firstcolumn(A::ExtensionArray) = firstrow(parent(A))
 lastcolumn(A::ExtensionArray) = lastrow(parent(A))
 
-@inline function Base.getindex(A::RestrictionArray, i::Int, j::Int)
+@inline function Base.getindex(A::RestrictionArray{T}, i::Int, j::Int) where T
     @boundscheck checkbounds(A, i, j)
-    j == rowselection(A)[i]
+    j == rowselection(A)[i] ? one(T) : zero(T)
 end
 
 function LinearAlgebra.mul!(y::AbstractVector, R::RestrictionArray, x::AbstractVector, α::Number, β::Number)
@@ -55,23 +55,25 @@ LinearAlgebra.pinv(A::ExtensionArray) = adjoint(A)
 
 
 "Selecting a step-range of elements."
-struct StridedRows <: RestrictionArray
+struct StridedRows{T} <: RestrictionArray{T}
     len         ::  Int
     selection   ::  StepRange{Int,Int}
 
-    function StridedRows(len::Int, selection)
+    function StridedRows{T}(len::Int, selection) where T
         @assert first(selection) >= 1
         @assert last(selection) <= len
         new(len, selection)
     end
 end
 
-const StridedColumns = Adjoint{Bool,StridedRows}
+const StridedColumns{T} = Adjoint{T,StridedRows{T}}
+
+StridedRows(args...; options) = StridedRows{Bool}(args...; options...)
 
 # Make a StridedRows selection with range offset:step:len
-function StridedRows(len::Int; step::Int, offset::Int = 1)
+function StridedRows{T}(len::Int; step::Int, offset::Int = 1) where T
     @assert 1 <= offset <= step
-    StridedRows(len, offset:step:len)
+    StridedRows{T}(len, offset:step:len)
 end
 
 columnlength(A::StridedRows) = A.len
@@ -85,18 +87,20 @@ Base.step(A::StridedColumns) = step(rowselection(parent(A)))
 
 
 "Selecting a unit range of elements."
-struct ContiguousRows <: RestrictionArray
+struct ContiguousRows{T} <: RestrictionArray{T}
     len         ::  Int
     selection   ::  UnitRange{Int}
 
-    function ContiguousRows(len::Int, selection)
+    function ContiguousRows{T}(len::Int, selection) where T
         @assert 1 <= first(selection)
         @assert last(selection) <= len
         new(len, selection)
     end
 end
 
-const ContiguousColumns = Adjoint{Bool,ContiguousRows}
+ContiguousRows(len, selection) = ContiguousRows{Bool}(len, selection)
+
+const ContiguousColumns{T} = Adjoint{T,ContiguousRows{T}}
 
 columnlength(A::ContiguousRows) = A.len
 rowselection(A::ContiguousRows) = A.selection
@@ -105,3 +109,7 @@ rowselection(A::ContiguousRows) = A.selection
 ## Convenience constructors
 RestrictionArray(len::Int, selection::UnitRange) = ContiguousRows(len, selection)
 RestrictionArray(len::Int, selection::StepRange) = StridedRows(len, selection)
+RestrictionArray{T}(len::Int, selection::UnitRange) where T =
+    ContiguousRows{T}(len, selection)
+RestrictionArray{T}(len::Int, selection::StepRange) where T =
+    StridedRows{T}(len, selection)

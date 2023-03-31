@@ -9,13 +9,13 @@ const BlockDiagonal{T} =
 const BlockDiagonalAdj{T} = Adjoint{T,BlockDiagonal{T}}
 
 "Block row selection operator of a multi-row circulant matrix."
-const RestrictionBlockArray =
-    BlockMatrix{Bool, Matrix{U}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}} where {U<:RestrictionArray}
+const RestrictionBlockArray{T} =
+    BlockMatrix{T, Matrix{U}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}} where {U<:RestrictionArray{T}}
 
 const ColumnBlockArray = Union{
     BlockCirculant{T} where T,
     BlockDiagonal{T} where T,
-    RestrictionBlockArray
+    RestrictionBlockArray{T} where T
 }
 
 # Multiplication with block-column arrays

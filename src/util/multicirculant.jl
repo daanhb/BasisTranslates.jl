@@ -29,9 +29,9 @@ function blockcirculant(A::MultiRowCirculant)
 end
 
 "Permutation to convert the given matrix into a block-column circulant matrix."
-function rowpermutation(A::MultiRowCirculant)
+function rowpermutation(A::MultiRowCirculant{T}) where T
     s, n = nblocks(A), blockdim(A)
-    ops = [StridedRows(s*n; step = s, offset = i) for i in 1:s]
+    ops = [StridedRows{T}(s*n; step = s, offset = i) for i in 1:s]
     mortar(reshape(ops, s, 1))
 end
 
@@ -44,7 +44,7 @@ function LinearAlgebra.mul!(y::AbstractVector, A::MultiRowCirculant, x::Abstract
     y
 end
 
-const RowPermutationArray = BlockMatrix{Bool, Matrix{StridedRows}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
+const RowPermutationArray{T} = BlockMatrix{T, Matrix{StridedRows{T}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
 
 """
 Factorization of a multi-row circulant matrix.
@@ -62,7 +62,7 @@ struct MultiRowCirculantFactorization{T} <: LinearAlgebra.Factorization{T}
     Dpinv   ::  BlockDiagonalAdj{Complex{T}}
     F       ::  NormalizedDFT{T}
     P       ::  BlockFourierMatrix{T}
-    Π       ::  RowPermutationArray
+    Π       ::  RowPermutationArray{T}
 end
 
 nblocks(F::MultiRowCirculantFactorization) = nblocks(F.A)
