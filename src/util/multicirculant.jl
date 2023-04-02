@@ -31,7 +31,7 @@ end
 "Permutation to convert the given matrix into a block-column circulant matrix."
 function rowpermutation(A::MultiRowCirculant{T}) where T
     s, n = nblocks(A), blockdim(A)
-    ops = [StridedRows{T}(s*n; step = s, offset = i) for i in 1:s]
+    ops = [StridedRows{Complex{T}}(s*n; step = s, offset = i) for i in 1:s]
     mortar(reshape(ops, s, 1))
 end
 
@@ -55,14 +55,14 @@ The matrix `B` is block-diagonalized using block Fourier, `P'*B*F = D`.
 
 The complete factorization satisfies `A = Π'*P*D*F'`.
 """
-struct MultiRowCirculantFactorization{T} <: LinearAlgebra.Factorization{T}
+struct MultiRowCirculantFactorization{T} <: LinearAlgebra.Factorization{Complex{T}}
     A       ::  MultiRowCirculant{T}
     B       ::  BlockCirculant{T}
     D       ::  BlockDiagonal{Complex{T}}
     Dpinv   ::  BlockDiagonalAdj{Complex{T}}
     F       ::  NormalizedDFT{T}
     P       ::  BlockFourierMatrix{T}
-    Π       ::  RowPermutationArray{T}
+    Π       ::  RowPermutationArray{Complex{T}}
 end
 
 nblocks(F::MultiRowCirculantFactorization) = nblocks(F.A)

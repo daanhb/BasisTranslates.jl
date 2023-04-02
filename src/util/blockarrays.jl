@@ -10,7 +10,7 @@ const BlockDiagonalAdj{T} = Adjoint{T,BlockDiagonal{T}}
 
 "Block row selection operator of a multi-row circulant matrix."
 const RestrictionBlockArray{T} =
-    BlockMatrix{T, Matrix{U}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}} where {U<:RestrictionArray{T}}
+    BlockMatrix{T, Matrix{U}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}} where {U<:RestrictionArray}
 
 const ColumnBlockArray = Union{
     BlockCirculant{T} where T,
