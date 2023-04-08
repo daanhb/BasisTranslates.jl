@@ -47,7 +47,7 @@ function LinearAlgebra.mul!(y::AbstractVector, E::ExtensionArray, x::AbstractVec
     y
 end
 
-Base.:*(R::RestrictionArray, x::GridArrays.AbstractEquispacedGrid) = R * range(x)
+Base.:*(R::RestrictionArray, x::BasisFunctions.AbstractEquispacedGrid) = R * range(x)
 Base.:*(R::RestrictionArray, x::AbstractRange) = x[rowselection(R)]
 
 LinearAlgebra.pinv(A::RestrictionArray) = adjoint(A)
