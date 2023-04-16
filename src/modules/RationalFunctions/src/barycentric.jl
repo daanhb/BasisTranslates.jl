@@ -31,6 +31,32 @@ BasisFunctions.size(Φ::BarycentricRational) = size(Φ.w)
 BasisFunctions.support(Φ::BarycentricRational{T}) where T =
     DomainSets.FullSpace{T}()
 
+function BasisFunctions.similar(Φ::BarycentricRational, ::Type{T}, n::Int) where T
+    @assert n == length(Φ)
+    BarycentricRational{T}(Φ.z, Φ.w)
+end
+Base.complex(Φ::BarycentricRational{T}) where T = similar(Φ, complex(T))
+
+BasisFunctions.interpolation_grid(Φ::BarycentricRational) = Φ.z
+
+"""
+Construct the interpolation operator of the barycentric form.
+
+This is a diagonal operator, since the weights of the numerator are simply those
+of the denominator times the function values.
+"""
+function interpolation_operator(Φ::BarycentricRational)
+    pts = Φ.z
+    DiagonalOperator(GridBasis(pts), Φ, Φ.w)
+end
+
+function BasisFunctions.interpolation(::Type{T}, Φ::BarycentricRational, gb::GridBasis) where T
+    if grid(gb) == Φ.z
+        interpolation_operator(similar(Φ, T))
+    else
+        BasisFunctions.default_interpolation(T, Φ, gb)
+    end
+end
 
 """
 Evaluate a rational function in `(α,β)` form with the given support points
@@ -86,9 +112,9 @@ end
 
 """
 Compute the poles, residues and zeros of a rational function in
-barycentric form.
+barycentric `(α, β)` form.
 """
-function poles_residues_zeros(z, α, β)
+function barycentric_poles_residues_zeros(z, α, β)
     poles = pf_roots(z, β)  # roots of the denominator
     zeros = pf_roots(z, α)  # roots of the numerator
 
@@ -98,3 +124,11 @@ function poles_residues_zeros(z, α, β)
 
     poles, residues, zeros
 end
+
+"""
+Compute the poles of a rational function in barycentric form with the
+given weights.
+"""
+barycentric_poles(z, w) = pf_roots(z, w)
+
+poles(Φ::BarycentricRational) = barycentric_poles(Φ.z, Φ.w)

@@ -16,6 +16,12 @@ BasisTranslates.centers(Φ::PartialFractions) = Φ.poles
 
 BasisFunctions.support(Φ::PartialFractions) = Φ.support
 
+function BasisFunctions.similar(Φ::PartialFractions, ::Type{T}, n::Int) where T
+    @assert n == length(Φ)
+    PartialFractions{T}(Φ.poles, Φ.support)
+end
+Base.complex(Φ::PartialFractions{T}) where T = similar(Φ, complex(T))
+
 kernel(Φ::PartialFractions) = PartialFractionKernel()
 
 function BasisFunctions.dict_norm(Φ::PartialFractions, idx, p::Real)
