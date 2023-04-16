@@ -29,3 +29,9 @@ function BasisFunctions.dict_norm(Φ::PartialFractions, idx, p::Real)
         sqrt(-1/(c+1) + 1/c)
     end
 end
+
+"Evaluate a linear combination of partial fractions in the point `x`."
+pf_eval(z, w, x) = sum(w[k]/(x-z[k]) for k in 1:length(z))
+
+BasisFunctions.unsafe_eval_expansion(Φ::PartialFractions, coefficients, x) =
+    pf_eval(Φ.poles, coefficients, x)

@@ -22,5 +22,6 @@ include("kernel.jl")
 include("dict.jl")
 include("lightning.jl")
 include("projection.jl")
+include("barycentric.jl")
 
 end
