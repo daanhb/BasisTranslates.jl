@@ -2,7 +2,8 @@ module RationalFunctions
 
 using ..BasisTranslates
 
-using BasisFunctions, DomainSets
+using BasisFunctions, DomainSets, DomainIntegrals
+using LinearAlgebra
 
 import BasisTranslates:
     kernel,
@@ -20,5 +21,6 @@ export PartialFractions,
 include("kernel.jl")
 include("dict.jl")
 include("lightning.jl")
+include("projection.jl")
 
 end
