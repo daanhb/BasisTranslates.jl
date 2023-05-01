@@ -21,7 +21,7 @@ export PartialFractions,
 include("kernel.jl")
 include("dict.jl")
 include("lightning.jl")
-include("projection.jl")
 include("barycentric.jl")
+include("algorithms.jl")
 
 end
