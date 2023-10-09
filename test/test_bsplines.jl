@@ -113,25 +113,25 @@ function derivative_test(T)
     t2 = (t[1:end-1]+t[2:end])/2
     for i in 2:10
         y1 = eval_bspline.(i, t, T)
-        y2 = eval_bspline_derivative.(i, 1, t2, T)
+        y2 = eval_bspline_derivative.(i, t2, 1, T)
         @test norm(diff(y1)./diff(t).-y2) < .1
     end
     for i in 2:10
         y1 = eval_periodic_bspline.(i, t, 5, T)
-        y2 = eval_periodic_bspline_derivative.(i, 1, t2, 5, T)
+        y2 = eval_periodic_bspline_derivative.(i, t2, 5, 1, T)
         @test norm(diff(y1)./diff(t).-y2) < .1
     end
 
     for t in [LinRange(0,1,100), LinRange(-1,0,100), LinRange(1,2,100)]
         t2 = (t[1:end-1]+t[2:end])/2
         y1 = eval_bspline.(1, t, T)
-        y2 = eval_bspline_derivative.(1, 1, t2, T)
+        y2 = eval_bspline_derivative.(1, t2, 1, T)
         @test norm(diff(y1)./diff(t).-y2) < .1
     end
 
     t0 = LinRange(-1,7,100)
     for D in 0:6
-        @test norm(eval_bspline_derivative.(D, D+1, t0, T))==0
+        @test norm(eval_bspline_derivative.(D, t0, D+1, T))==0
     end
 
     t0 = -2.25:1/(1<<4):10
@@ -142,31 +142,31 @@ function derivative_test(T)
     t5 = (t4[1:end-1]+t4[2:end])/2
 
     for D in 3:6
-        y0 = eval_bspline_derivative.(D, 0, t0, T)
-        y2 = eval_bspline_derivative.(D, 2, t2, T)
+        y0 = eval_bspline_derivative.(D, t0, 0, T)
+        y2 = eval_bspline_derivative.(D, t2, 2, T)
         @test .5 > norm(diff(diff(y0)./diff(t0))./diff(t1) - y2)
     end
 
     for D in 4:6
-        y0 = eval_bspline_derivative.(D, 0, t0, T)
-        y2 = eval_bspline_derivative.(D, 3, t3, T)
+        y0 = eval_bspline_derivative.(D, t0, 0, T)
+        y2 = eval_bspline_derivative.(D, t3, 3, T)
         @test .5 > norm(  diff(diff(diff(y0)./diff(t0))./diff(t1))./diff(t2) - y2)
     end
 
     for D in 5:6
-        y0 = eval_bspline_derivative.(D, 0, t0, T)
-        y2 = eval_bspline_derivative.(D, 4, t4, T)
+        y0 = eval_bspline_derivative.(D, t0, 0, T)
+        y2 = eval_bspline_derivative.(D, t4, 4, T)
         @test .5 > norm(  diff(diff(diff(diff(y0)./diff(t0))./diff(t1))./diff(t2))./diff(t3) - y2)
     end
 
     for D in 6:8
-        y0 = eval_bspline_derivative.(D, 0, t0, T)
-        y2 = eval_bspline_derivative.(D, 5, t5, T)
+        y0 = eval_bspline_derivative.(D, t0, 0, T)
+        y2 = eval_bspline_derivative.(D, t5, 5, T)
         @test .5 > norm(  diff(diff(diff(diff(diff(y0)./diff(t0))./diff(t1))./diff(t2))./diff(t3))./diff(t4) - y2)
     end
 
     for D in 1:6
-        @test Int.(eval_bspline_derivative.(D, D, -.5:D+2, T)) == vcat(0,[(-1)^k*binomial(D,k) for k in 0:D],0)
+        @test Int.(eval_bspline_derivative.(D, -.5:D+2, D, T)) == vcat(0,[(-1)^k*binomial(D,k) for k in 0:D],0)
     end
 end
 
@@ -189,7 +189,7 @@ function allocation_test()
         end
     end
     for K in 0:10, D in 1:K
-        f = t -> eval_bspline_derivative(K, D, t, Float64)
+        f = t -> eval_bspline_derivative(K, t, D, Float64)
         for x in LinRange(-10,10,2)
             f(x)
         end

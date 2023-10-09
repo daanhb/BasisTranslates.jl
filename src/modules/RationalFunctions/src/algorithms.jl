@@ -24,9 +24,9 @@ function smallest_singular_value_rational(basis, M)
     N = length(basis)
     u,s,v = svd(M)
     V = v[:,end]
-    p = Expansion(basis, V[1:N])
-    q = Expansion(basis, V[N+1:2N])
-    p, q
+    q = Expansion(basis, V[1:N])
+    p = Expansion(basis, V[N+1:2N])
+    p, q, s[end]
 end
 
 """
@@ -44,8 +44,8 @@ end
 function rat_projection(f, N, μ::Measure{T}) where T
     basis = ChebyshevT{T}(N) → support(μ)
     M = rat_projection_matrix(basis, f, μ, T)
-    p, q = smallest_singular_value_rational(basis, M)
-    p, q, M
+    p, q, s = smallest_singular_value_rational(basis, M)
+    p, q, M, s
 end
 
 
