@@ -75,10 +75,10 @@ function synthesis_highpass(mra::MRA, n::Int)
 end
 
 const AnalysisMRA{T} =
-    BlockMatrix{T, Matrix{FatRectangularCirculant{T}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
+    BlockMatrix{T, Matrix{FatRectangularCirculant{T}}, Tuple{BlockedOneTo{Int64,Vector{Int64}}, BlockedOneTo{Int64,Vector{Int64}}}}
 
 const SynthesisMRA{T} =
-    BlockMatrix{T, Matrix{TallRectangularCirculant{T}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
+    BlockMatrix{T, Matrix{TallRectangularCirculant{T}}, Tuple{BlockedOneTo{Int64,Vector{Int64}}, BlockedOneTo{Int64,Vector{Int64}}}}
 
 function periodic_analysis(mra::MRA, n::Int)
     A1 = analysis_lowpass(mra, n)

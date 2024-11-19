@@ -1,16 +1,16 @@
 "Definition of a column-block circulant matrix."
 const BlockCirculant{T} =
-    BlockMatrix{T, Matrix{Circulant{T}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
+    BlockMatrix{T, Matrix{Circulant{T}}, Tuple{BlockedOneTo{Int64,Vector{Int64}}, BlockedOneTo{Int64,Vector{Int64}}}}
 
 "Definition of a column-block diagonal matrix."
 const BlockDiagonal{T} =
-    BlockMatrix{T, Matrix{Diagonal{T, Vector{T}}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
+    BlockMatrix{T, Matrix{Diagonal{T, Vector{T}}}, Tuple{BlockedOneTo{Int64,Vector{Int64}}, BlockedOneTo{Int64,Vector{Int64}}}}
 
 const BlockDiagonalAdj{T} = Adjoint{T,BlockDiagonal{T}}
 
 "Block row selection operator of a multi-row circulant matrix."
 const RestrictionBlockArray{T} =
-    BlockMatrix{T, Matrix{U}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}} where {U<:RestrictionArray}
+    BlockMatrix{T, Matrix{U}, Tuple{BlockedOneTo{Int64,Vector{Int64}}, BlockedOneTo{Int64,Vector{Int64}}}} where {U<:RestrictionArray}
 
 const ColumnBlockArray = Union{
     BlockCirculant{T} where T,

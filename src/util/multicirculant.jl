@@ -44,7 +44,7 @@ function LinearAlgebra.mul!(y::AbstractVector, A::MultiRowCirculant, x::Abstract
     y
 end
 
-const RowPermutationArray{T} = BlockMatrix{T, Matrix{StridedRows{T}}, Tuple{BlockedUnitRange{Vector{Int64}}, BlockedUnitRange{Vector{Int64}}}}
+const RowPermutationArray{T} = BlockMatrix{T, Matrix{StridedRows{T}}, Tuple{BlockedOneTo{Int64,Vector{Int64}}, BlockedOneTo{Int64,Vector{Int64}}}}
 
 """
 Factorization of a multi-row circulant matrix.

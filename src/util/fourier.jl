@@ -124,7 +124,7 @@ struct BlockFourierMatrix{T,A} <: AbstractBlockArray{Complex{T},2}
     s       ::  Int
     n       ::  Int
     block   ::  A
-    axes1   ::  BlockedUnitRange{Vector{Int64}}
+    axes1   ::  BlockedOneTo{Int64,Vector{Int64}}
 
     function BlockFourierMatrix{T,A}(s::Int, n::Int, block::NormalizedDFT) where {T,A}
         axes1 = blockedrange([n for i in 1:s])

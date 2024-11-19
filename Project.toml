@@ -1,7 +1,7 @@
 name = "BasisTranslates"
 uuid = "6f49839c-b887-42fe-a304-07c35be75e0b"
 authors = ["Daan Huybrechs <daan.huybrechs@kuleuven.be>"]
-version = "0.1.3"
+version = "0.1.4"
 
 [deps]
 AbstractFFTs = "621f4979-c628-5d54-868e-fcf4e3e8185c"
@@ -18,10 +18,10 @@ SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 [compat]
 AbstractFFTs = "1.2"
 AZalgorithm = "0.1"
-BasisFunctions = "0.6.3"
-BlockArrays = "0.16"
+BasisFunctions = "0.7"
+BlockArrays = "1"
 CompositeTypes = "0.1.3"
-DomainIntegrals = "0.4.5"
+DomainIntegrals = "0.5"
 DomainSets = "0.7"
 FFTW = "1.6"
 SpecialFunctions = "1.0,2.0"
