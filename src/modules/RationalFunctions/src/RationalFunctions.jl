@@ -2,7 +2,7 @@ module RationalFunctions
 
 using ..BasisTranslates
 
-using BasisFunctions, DomainSets, DomainIntegrals
+using BasisFunctions, DomainSets, DomainIntegrals, FunctionMaps
 using LinearAlgebra
 
 import BasisTranslates:

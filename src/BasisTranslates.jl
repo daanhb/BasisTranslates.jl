@@ -2,7 +2,7 @@ module BasisTranslates
 
 using AbstractFFTs, FFTW
 using BlockArrays, LinearAlgebra
-using BasisFunctions, DomainSets, DomainIntegrals
+using BasisFunctions, DomainSets, FunctionMaps, DomainIntegrals
 using AZalgorithm
 
 import BasisFunctions:

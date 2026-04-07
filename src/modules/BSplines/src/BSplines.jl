@@ -2,7 +2,7 @@ module BSplines
 
 using ..BasisTranslates
 
-using BasisFunctions, DomainSets
+using BasisFunctions, DomainSets, FunctionMaps
 
 using SpecialFunctions
 

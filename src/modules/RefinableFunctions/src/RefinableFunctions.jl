@@ -3,7 +3,7 @@ module RefinableFunctions
 using ..BasisTranslates
 using BasisTranslates.BSplines
 
-using BasisFunctions, DomainSets, CompositeTypes
+using BasisFunctions, DomainSets, FunctionMaps, CompositeTypes
 using LinearAlgebra, BlockArrays
 
 import DomainSets:
